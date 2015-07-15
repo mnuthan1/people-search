@@ -1,0 +1,74 @@
+/*!
+ * Start Bootstrap - Logo Nav HTML Template (http://startbootstrap.com)
+ * Code licensed under the Apache License v2.0.
+ * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ */
+html, body {
+    overflow-y: visible;
+}
+
+body {
+    padding-top: 70px; /* Required padding for .navbar-fixed-top. Change if height of navigation changes. */
+}
+
+.navbar-fixed-top .nav {
+    padding: 15px 0;
+}
+
+.navbar-fixed-top .navbar-brand {
+    padding: 0 15px;
+}
+
+@media(min-width:768px) {
+    body {
+        padding-top: 100px; /* Required padding for .navbar-fixed-top. Change if height of navigation changes. */
+    }
+
+    .navbar-fixed-top .navbar-brand {
+        padding: 15px 0;
+    }
+}
+
+#advSerachModal { display: none; z-index: 1100; }
+
+/* for details image */
+    .image_container{
+        width: 120px;
+        margin-left: 10px;
+        float: right;
+        position: relative;
+    	display:inline-block;
+    }
+    .thumb{
+        width: 130px;
+        height:120px;
+        float: right;
+       
+    }
+    .text{
+       align:right;
+	    width: 120px;
+    }
+
+
+
+/* org chart */
+
+.node circle {
+	  fill: #fff;
+	  stroke: steelblue;
+	  stroke-width: 3px;
+	}
+
+	.node text { font: 10px sans-serif; }
+
+	.link {
+	  fill: none;
+	  stroke: #ccc;
+	  stroke-width: 2px;
+	}
+	
+.node {
+    cursor: pointer;
+}
+

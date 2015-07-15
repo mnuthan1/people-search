@@ -1,0 +1,27 @@
+application: peoplesearch-999
+version: 2
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /css
+  static_dir: css
+- url: /data
+  static_dir: data
+- url: /scripts
+  static_dir: scripts
+- url: /img
+  static_dir: img
+- url: /.*
+  script: main.app
+
+
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest
+- name: pycrypto
+  version: latest
+
