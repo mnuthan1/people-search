@@ -4,71 +4,125 @@
  * For details, see http://www.apache.org/licenses/LICENSE-2.0.
  */
 html, body {
-    overflow-y: visible;
+	overflow-y: visible;
 }
 
 body {
-    padding-top: 70px; /* Required padding for .navbar-fixed-top. Change if height of navigation changes. */
+	padding-top: 70px;
+	/* Required padding for .navbar-fixed-top. Change if height of navigation changes. */
 }
 
 .navbar-fixed-top .nav {
-    padding: 15px 0;
+	padding: 15px 0;
 }
 
 .navbar-fixed-top .navbar-brand {
-    padding: 0 15px;
+	padding: 0 15px;
 }
 
-@media(min-width:768px) {
-    body {
-        padding-top: 100px; /* Required padding for .navbar-fixed-top. Change if height of navigation changes. */
-    }
-
-    .navbar-fixed-top .navbar-brand {
-        padding: 15px 0;
-    }
+@media ( min-width :768px) {
+	body {
+		padding-top: 100px;
+		/* Required padding for .navbar-fixed-top. Change if height of navigation changes. */
+	}
+	.navbar-fixed-top .navbar-brand {
+		padding: 15px 0;
+	}
 }
 
-#advSerachModal { display: none; z-index: 1100; }
+#advSerachModal {
+	display: none;
+	z-index: 1100;
+}
 
 /* for details image */
-    .image_container{
-        width: 120px;
-        margin-left: 10px;
-        float: right;
-        position: relative;
-    	display:inline-block;
-    }
-    .thumb{
-        width: 130px;
-        height:120px;
-        float: right;
-       
-    }
-    .text{
-       align:right;
-	    width: 120px;
-    }
-
-
-
-/* org chart */
-
-.node circle {
-	  fill: #fff;
-	  stroke: steelblue;
-	  stroke-width: 3px;
-	}
-
-	.node text { font: 10px sans-serif; }
-
-	.link {
-	  fill: none;
-	  stroke: #ccc;
-	  stroke-width: 2px;
-	}
-	
-.node {
-    cursor: pointer;
+.image_container {
+	width: 120px;
+	margin-left: 10px;
+	float: right;
+	position: relative;
+	display: inline-block;
 }
 
+.image_container .thumb {
+	width: 100%;
+	height: 120px;
+	float: right;
+	text-align: center;
+}
+
+.image_container .text {
+	text-align: center;
+	width: 100%;
+}
+
+/* org chart */
+#orgChart .node circle {
+	fill: #fff;
+	stroke: steelblue;
+	stroke-width: 3px;
+}
+
+#orgChart .node text {
+	font: 10px sans-serif;
+}
+
+#orgChart .link {
+	fill: none;
+	stroke: #ccc;
+	stroke-width: 2px;
+}
+
+#orgChart .node {
+	cursor: pointer;
+}
+
+
+
+/*
+ * Off Canvas
+ * --------------------------------------------------
+ */
+@media screen and (max-width: 768px) {
+  .row-offcanvas {
+    position: relative;
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
+  }
+
+  .row-offcanvas-left
+  #sidebarLeft {
+    left: -40%;
+    
+  }
+
+  .row-offcanvas-left.active {
+    left: 40%;
+  }
+ 
+  .row-offcanvas-right 
+  #sidebarRight {
+    right: -40%;
+  }
+
+  .row-offcanvas-right.active {
+    right: 40%;
+  }
+
+  .sidebar-offcanvas {
+    position: absolute;
+    top: 0;
+    width: 40%;
+    margin-left: 10px;
+  }
+}
+
+
+.footer {
+  position: relative;
+  margin-top: -150px; /* negative value of footer height */
+  height: 150px;
+  clear:both;
+  padding-top:20px;
+} 

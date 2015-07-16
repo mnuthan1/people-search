@@ -18,8 +18,8 @@ $(document).ready(
 								'query' : query
 							};
 							return $.ajax({
-								//url : '/search',
-								url : '/data/user.json',
+								url : '/search',
+								//url : '/data/user.json',
 								type : 'post',
 								data : JSON.stringify(q),
 								dataType : 'json',

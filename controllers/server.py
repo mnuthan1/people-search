@@ -70,21 +70,40 @@ class RootPage(webapp2.RequestHandler):
 
 
 class Search(webapp2.RequestHandler):
+    
+    
+
     @decorator.custom_login_required
-    @decorator.get_oauth_build
-    def post(self,directory_service):
+    def post(self):
         jsonstring = self.request.body
         jsonobject = json.loads(jsonstring)
         query = jsonobject.get('query')
         logging.info(query)
        
-        all_users = []
-        page_token = None
+        final_list = []
+        
         params = {'domain': 'globalfoundries.com',
                   'orderBy':'email',
                   'viewType':'admin_view',
                   'query':'familyName:{'+query+'}*' }
 
+        logging.info(final_list.__class__)
+        final_list.extend(self.searchUsers(params))
+        
+        params = {'domain': 'globalfoundries.com',
+                  'orderBy':'email',
+                  'viewType':'admin_view',
+                  'query':'givenName:{'+query+'}*' }
+
+        final_list.extend(self.searchUsers(params))
+        self.response.headers['Content-Type'] = 'application/json'  
+        self.response.write(json.dumps(final_list))
+    
+    
+    @decorator.get_oauth_build    
+    def searchUsers(self,params,directory_service):
+        all_users = []
+        page_token = None
         while True:
             try:
                 if page_token:
@@ -92,7 +111,8 @@ class Search(webapp2.RequestHandler):
                 current_page = directory_service.users().list(**params).execute()
                 #current_page = directory_service.files().list(maxResults=10).execute()
                 logging.info( current_page)
-                all_users.extend(current_page['users'])
+                if( users in current_page ):
+                    all_users.extend(current_page['users'])
                 for user in all_users:
                     logging.info( user['primaryEmail'])
                 page_token = current_page.get('nextPageToken')
@@ -102,10 +122,10 @@ class Search(webapp2.RequestHandler):
                 logging.error( 'An error occurred: %s' % error)
                 break
         logging.info(json.dumps(all_users))
-        self.response.headers['Content-Type'] = 'application/json'  
-        self.response.write(json.dumps(all_users))
+        logging.info(all_users.__class__)
+        return all_users
+    
         
-
 class AdvSearch(webapp2.RequestHandler):
     @decorator.custom_login_required
     @decorator.get_oauth_build
