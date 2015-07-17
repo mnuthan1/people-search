@@ -16,7 +16,7 @@ var renderListDetails = function(users) {
 		s+= "<a href=\"#\" onClick=\"renderDetailsByIndex("+i+")\">";
 		if(users[i].thumbnailPhotoUrl)
 			{
-			s+= "<i class=\"sidebar-icon\"> <img src = " + users[i].thumbnailPhotoUrl +"\"></img></i>";
+			s+= "<i class=\"sidebar-icon\"> <img src = " + users[i].thumbnailPhotoUrl +"></img></i>";
 			} else {
 			s+= "<i class=\"sidebar-icon\"> <img src = /img/image_not_found.jpg ></img></i>";
 			}
