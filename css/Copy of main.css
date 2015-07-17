@@ -37,7 +37,7 @@ body {
 
 /* for details image */
 .image_container {
-	width: 170px;
+	width: 120px;
 	margin-left: 10px;
 	float: right;
 	position: relative;
@@ -76,5 +76,76 @@ body {
 #orgChart .node {
 	cursor: pointer;
 }
+
+
+
+/*
+ * Off Canvas
+ * --------------------------------------------------
+ */
+@media screen and (max-width: 768px) {
+  .row-offcanvas {
+    position: relative;
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
+  }
+
+  .row-offcanvas-left
+  #sidebarLeft {
+    left: -40%;
+    
+  }
+
+  .row-offcanvas-left.active {
+    left: 40%;
+  }
+ 
+  .row-offcanvas-right 
+  #sidebarRight {
+    right: -40%;
+  }
+
+  .row-offcanvas-right.active {
+    right: 40%;
+  }
+
+  .sidebar-offcanvas {
+    position: absolute;
+    top: 0;
+    width: 40%;
+    margin-left: 10px;
+  }
+}
+
+
+.footer {
+  position: relative;
+  margin-top: -150px; /* negative value of footer height */
+  height: 150px;
+  clear:both;
+  padding-top:20px;
+} 
+
+}
+
+/* side bar nav */
+
+.sidebar-nav {
+  margin: 0;
+  padding: 0;
+}
+.sidebar-nav li {
+    position: relative;
+    list-style-type: none;
+}
+ .sidebar-nav    a {
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      &:hover {
+        background: transparent;
+      }
+ }
 
       

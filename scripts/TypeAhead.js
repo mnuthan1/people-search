@@ -18,13 +18,13 @@ $(document).ready(
 								'query' : query
 							};
 							return $.ajax({
-								url : '/search',
-								//url : '/data/user.json',
+								//url : '/search',
+								url : '/data/user.json',
 								type : 'post',
 								data : JSON.stringify(q),
 								dataType : 'json',
 								success : function(result) {
-									console.log(result);
+									//console.log(result);
 									resultList = result.map(function(item) {
 										//return item.name.fullName + "";
 										//var aItem = { id: item.Id, name: item.Name };

@@ -70,39 +70,36 @@ class RootPage(webapp2.RequestHandler):
 
 
 class Search(webapp2.RequestHandler):
-    
-    
-
+    all_users = []
     @decorator.custom_login_required
     def post(self):
         jsonstring = self.request.body
         jsonobject = json.loads(jsonstring)
+        self.all_users = []
         query = jsonobject.get('query')
         logging.info(query)
-       
-        final_list = []
-        
+     
         params = {'domain': 'globalfoundries.com',
                   'orderBy':'email',
                   'viewType':'admin_view',
                   'query':'familyName:{'+query+'}*' }
 
-        logging.info(final_list.__class__)
-        final_list.extend(self.searchUsers(params))
-        
+       
+        self.searchUsers(params)
+       
         params = {'domain': 'globalfoundries.com',
                   'orderBy':'email',
                   'viewType':'admin_view',
                   'query':'givenName:{'+query+'}*' }
 
-        final_list.extend(self.searchUsers(params))
+        self.searchUsers(params)
         self.response.headers['Content-Type'] = 'application/json'  
-        self.response.write(json.dumps(final_list))
+        self.response.write(json.dumps(self.all_users))
     
     
     @decorator.get_oauth_build    
     def searchUsers(self,params,directory_service):
-        all_users = []
+        
         page_token = None
         while True:
             try:
@@ -110,10 +107,10 @@ class Search(webapp2.RequestHandler):
                     params['pageToken'] = page_token
                 current_page = directory_service.users().list(**params).execute()
                 #current_page = directory_service.files().list(maxResults=10).execute()
-                logging.info( current_page)
-                if( users in current_page ):
-                    all_users.extend(current_page['users'])
-                for user in all_users:
+                logging.info( current_page.__class__)
+                if( 'users' in current_page ):
+                    self.all_users.extend(current_page['users'])
+                for user in self.all_users:
                     logging.info( user['primaryEmail'])
                 page_token = current_page.get('nextPageToken')
                 if not page_token:
@@ -121,9 +118,9 @@ class Search(webapp2.RequestHandler):
             except HTTPError as error:
                 logging.error( 'An error occurred: %s' % error)
                 break
-        logging.info(json.dumps(all_users))
-        logging.info(all_users.__class__)
-        return all_users
+        logging.info(json.dumps(self.all_users))
+        logging.info(self.all_users.__class__)
+        return None
     
         
 class AdvSearch(webapp2.RequestHandler):

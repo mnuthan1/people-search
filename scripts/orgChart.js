@@ -159,8 +159,11 @@ function update(source) {
 	  .attr("dy", ".35em")
 	  .attr("text-anchor", function(d) { 
 		  return d.children || d._children ? "end" : "middle"; })
-	  .text(function(d) { return d.organizations[0].name})
-	  .style("fill-opacity", .8);*/
+	  .text(function(d) { return d.organizations[0].title})
+	  .style("fill-opacity", .8)
+	  .each().style("font-size", function(d) {
+		return 7 + "px";
+	});*/
 
 	nodeEnter.append("text").attr("x", function(d) {
 		return d.children || d._children ? (15) * -1 : -15
