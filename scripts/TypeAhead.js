@@ -1,4 +1,4 @@
-$(document).ready(
+/*$(document).ready(
 		function($) {
 			// Workaround for bug in mouse item selection
 			$.fn.typeahead.Constructor.prototype.blur = function() {
@@ -71,6 +71,6 @@ $(document).ready(
 				renderDetails(product);
 
 			};
-		});
+		});*/
 
 

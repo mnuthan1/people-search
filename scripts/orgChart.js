@@ -1,49 +1,46 @@
-/**
- * 
- */
-
+/*************************************************************************
+ * Global Foundries
+ *
+ *************************************************************************
+ *
+ * @description
+ * Java script util to draw Org Chart 
+ * user Jquery APIs and D3,js
+ * @author
+ * Nuthan Kumar
+ *
+ *************************************************************************/
 
 function wrap(text, width) {
-    text.each(function () {
-        var text = d3.select(this),
-            words = d3.select(this).text().split(/\s+/).reverse(),
-            word,
-            line = [],
-            lineNumber = 0,
-            lineHeight = 1.1, // ems
-            x = text.attr("x"),
-            y = text.attr("y"),
-            dy = 0, //parseFloat(text.attr("dy")),
-            tspan = text.text(null)
-                        .append("tspan")
-                        .attr("x", x)
-                        .attr("y", y)
-                        .attr("dy", dy + "em");
-        while (word = words.pop()) {
-            line.push(word);
-            tspan.text(line.join(" "));
-            if (tspan.node().getComputedTextLength() > width) {
-                line.pop();
-                tspan.text(line.join(" "));
-                line = [word];
-                tspan = text.append("tspan")
-                            .attr("x", x)
-                            .attr("y", y)
-                            .attr("dy", ++lineNumber * lineHeight + dy + "em")
-                            .text(word);
-            }
-        }
-    });
+	text
+			.each(function() {
+				var text = d3.select(this), words = d3.select(this).text()
+						.split(/\s+/).reverse(), word, line = [], lineNumber = 0, lineHeight = 1.1, // ems
+				x = text.attr("x"), y = text.attr("y"), dy = 0, //parseFloat(text.attr("dy")),
+				tspan = text.text(null).append("tspan").attr("x", x).attr("y",
+						y).attr("dy", dy + "em");
+				while (word = words.pop()) {
+					line.push(word);
+					tspan.text(line.join(" "));
+					if (tspan.node().getComputedTextLength() > width) {
+						line.pop();
+						tspan.text(line.join(" "));
+						line = [ word ];
+						tspan = text.append("tspan").attr("x", x).attr("y", y)
+								.attr("dy",
+										++lineNumber * lineHeight + dy + "em")
+								.text(word);
+					}
+				}
+			});
 }
 
-
 function getSize(d) {
-	var bbox = this.getBBox(), 
-		cbbox = this.parentNode.getBBox(), 
-		scale = Math.min(cbbox.width / bbox.width, cbbox.height / bbox.height);
-	console.log(scale);
-	console.log(d);
-	console.log(cbbox);
+	var bbox = this.getBBox(), cbbox = this.parentNode.getBBox(), scale = Math
+			.min(cbbox.width / bbox.width, cbbox.height / bbox.height);
+	//console.log(scale);
+	//console.log(d);
+	//console.log(cbbox);
 	d.scale = scale;
 }
 
@@ -86,13 +83,13 @@ function update(source) {
 		}
 	};
 	childCount(0, source);
-	var newWidth = 100 + d3.max(levelWidth) * 60; 
+	var newWidth = 100 + d3.max(levelWidth) * 60;
 	var newHeight = levelWidth.length * 160
 	//var tree = d3.layout.tree().size([newHeight, newWidth]);
 	var tree = d3.layout.tree().nodeSize([ 70, 60 ]);
-	console.log(newHeight);
-	console.log(newWidth);
-	console.log(levelWidth.length);
+	//console.log(newHeight);
+	//console.log(newWidth);
+	//console.log(levelWidth.length);
 
 	var svg = d3.select("#orgChart").append("svg").attr("width",
 			newWidth + margin.right + margin.left).attr("height",
@@ -103,8 +100,26 @@ function update(source) {
 	var nodes = tree.nodes(source).reverse(), links = tree.links(nodes);
 
 	// Normalize for fixed-depth.
-	nodes.forEach(function(d) {
+	/*nodes.forEach(function(d) {
 		d.y = d.depth * 100;
+	});*/
+
+	// Normalize for fixed-depth.
+	nodes.forEach(function(d) {
+		console.log(d);
+		d.y = d.depth * 100;
+		/*if (d.parent != null) {
+			d.x = d.parent.x - (d.parent.children.length - 1) * 30 / 2
+					+ (d.parent.children.indexOf(d)) * 30;
+		}*/
+		// if the node has too many children, go in and fix their positions to two columns.
+		if (d.children != null && d.children.length > 20) {
+			d.children.forEach(function(d, i) {
+				d.y = (d.depth * 100 + i % 2 * 100);
+				//d.x =  d.parent.x - (d.parent.children.length-1)*30/4
+				//+ (d.parent.children.indexOf(d))*30/2 - i % 2 * 15;
+			});
+		}
 	});
 
 	// Declare the nodes…
@@ -140,30 +155,11 @@ function update(source) {
 		return d.children || d._children ? "end" : "start";
 	}).text(function(d) {
 		return d.name.fullName;
-	}).style("fill-opacity", 1)
-	.call(wrap, 60); // wrap the text in <= 30 pixels
-	
-	//.each(getSize).style("font-size", function(d) {
-		//return d.scale + "px";
-	//});
-	
+	}).style("fill-opacity", 1).call(wrap, 60); // wrap the text in <= 30 pixels
 
-	/*nodeEnter.append("text")
-	  .attr("x", function(d) { 
-		  return d.children || d._children ? 
-		  (15) * -1 : -15 })
-	.attr("y", function(d) { 
-		  return d.children || d._children ? 
-		  (15) : + 50 })
-	  //.attr("y", "15px")
-	  .attr("dy", ".35em")
-	  .attr("text-anchor", function(d) { 
-		  return d.children || d._children ? "end" : "middle"; })
-	  .text(function(d) { return d.organizations[0].title})
-	  .style("fill-opacity", .8)
-	  .each().style("font-size", function(d) {
-		return 7 + "px";
-	});*/
+	//.each(getSize).style("font-size", function(d) {
+	//return d.scale + "px";
+	//});
 
 	nodeEnter.append("text").attr("x", function(d) {
 		return d.children || d._children ? (15) * -1 : -15
@@ -190,10 +186,60 @@ function update(source) {
 			}).attr("d", diagonal);
 
 	svg.selectAll("g.node").on("click", function() {
-		console.log(d3.select(this).attr("email"));
+		//console.log(d3.select(this).attr("email"));
 		advSearchRequest(d3.select(this).attr("email"));
 		// invoke new server request to load user
 	});
+
+	// attch context menu
+	contextMenuShowing = false;
+
+	/*d3.selectAll("g.node").on('contextmenu',function () {
+		if(contextMenuShowing) {
+	        d3.event.preventDefault();
+	        d3.select(".contextpopup").remove();
+	        contextMenuShowing = false;
+	    } 
+		//d3_target = d3.select(d3.event.target);
+		
+		d3.event.preventDefault();
+	    contextMenuShowing = true;
+	    d = d3.select(this);
+	    console.log(d);	
+	    
+	    canvas = d3.select("#orgChart");
+	    console.log(canvas);
+	    mousePosition = d3.mouse(this);
+	console.log(mousePosition);
+	    console.log(canvas);	
+	    popup = canvas.append("div")
+	        .attr("class", "contextpopup")
+	        .style("left", mousePosition[0] + "px")
+	        .style("top", mousePosition[1] + "px");
+	    popup.append("h2").text(d.display_division);
+	    popup.append("p").text(
+	        "mailto:" + d.attr("email") + ";");
+	    popup.append("p")
+	    .append("a")
+	    .attr("href",d.link)
+	    .text(d.link_text); 
+	    
+	    canvasSize = [
+	        this.offsetWidth,
+	        this.offsetHeight
+	    ];
+	    
+	    popupSize = [ 
+	        this.offsetWidth,
+	        this.offsetHeight
+	    ];
+	  
+	    
+	    d.style.position = "absolute";
+	    d.style.left = d.attr('x');
+	    d.style.top =  d.attr('y');
+	    
+	});*/
 
 	// node seperation distance
 

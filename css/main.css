@@ -1,7 +1,5 @@
 /*!
- * Start Bootstrap - Logo Nav HTML Template (http://startbootstrap.com)
- * Code licensed under the Apache License v2.0.
- * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ * elements to override bootstrap settings to adjust heights of some elements in html
  */
 html, body {
 	overflow-y: visible;
@@ -77,4 +75,17 @@ body {
 	cursor: pointer;
 }
 
+
+#orgChart .popup {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: #fff;
+    width: 200px;
+    border: 1px #ccc solid;
+    border-radius: 6px;
+    box-shadow: #333 2px 2px 4px;
+    padding: 8px;
+    font-family: arial, helvetica, sans-serif;
+}
       

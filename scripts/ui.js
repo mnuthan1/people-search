@@ -1,35 +1,51 @@
-/**
- * 
- */
-
+/*************************************************************************
+ * Global Foundries
+ *
+ *************************************************************************
+ *
+ * @description
+ * UI file to render dynamic HTML based on the ajax response
+ * user Jquery APIs, bootstrap CSS
+ * @author
+ * Nuthan Kumar
+ *
+ *************************************************************************/
     
  // render list details side bar
 var globalProducts = [];
 var renderListDetails = function(users) {
 	
 	globalProducts = users;
-	var s = "<ul class=\"nav sidebar-nav\">";
 	
-	for(i in users) {
+	if(users.length !=0 )
+	{
+		var s = "<ul class=\"nav sidebar-nav\">";
 		
-		s+= "<li>";
-		s+= "<a href=\"#\" onClick=\"renderDetailsByIndex("+i+")\">";
-		if(users[i].thumbnailPhotoUrl)
-			{
-			s+= "<i class=\"sidebar-icon\"> <img src = " + users[i].thumbnailPhotoUrl +"></img></i>";
-			} else {
-			s+= "<i class=\"sidebar-icon\"> <img src = /img/image_not_found.jpg ></img></i>";
-			}
-		//s+=  users[i].name.fullName +"</li>" ;
-		//s+= "<dd>"+users[i].organizations[0].title +"</dd></li>";
-		s+= "<dl class=\"sidebar-text\">";
-		s+= "<dt>"+users[i].name.fullName+"</dt>";
-		s+= "<dd>"+users[i].organizations[0].title + "</dd>";
-		s+= "</dl>";
-	    
-		s+="</a>";
-	}
-	s+="</ul>";
+		for(i in users) {
+			
+			s+= "<li>";
+			s+= "<a href=\"#\" onClick=\"renderDetailsByIndex("+i+")\">";
+			if(users[i].thumbnailPhotoUrl)
+				{
+				s+= "<i class=\"sidebar-icon\"> <img src = " + users[i].thumbnailPhotoUrl +"></img></i>";
+				} else {
+				s+= "<i class=\"sidebar-icon\"> <img src = /img/image_not_found.jpg ></img></i>";
+				}
+			//s+=  users[i].name.fullName +"</li>" ;
+			//s+= "<dd>"+users[i].organizations[0].title +"</dd></li>";
+			s+= "<dl class=\"sidebar-text\">";
+			s+= "<dt>"+users[i].name.fullName+"</dt>";
+			s+= "<dd>"+users[i].organizations[0].title + "</dd>";
+			s+= "</dl>";
+		    
+			s+="</a>";
+		}
+		s+="</ul>";
+	}else {
+		var s =" <div class=\"alert alert-info\" role=\"alert\">";
+		s+= "No Users found";
+		s+= "</div>";
+	} 
 	//console.log(s);
 	$('#sidebar').html(s);
 }

@@ -7,6 +7,8 @@ Attributes:
     JINJA_ENVIRONMENT (LIST): Module level variable to set JINJA template settings
     app : WSGI interface to extrenal world
     SCOPES (LIST): varible to hold google api scopes required for this application
+    
+    7/22/2015 - Added fileds to the query to reduce payload size
 
 """
 import logging
@@ -18,12 +20,28 @@ from google.appengine.api import users
 import webapp2
 import jinja2
 import json
+import re
 
 from decorators import decorator
 
 SCOPES = ["https://www.googleapis.com/auth/admin.directory.user",
             "https://www.googleapis.com/auth/admin.directory.user.readonly"] 
 
+FIELDS = ['nextPageToken',
+                  'users(name,relations,organizations,phones,thumbnailPhotoUrl,primaryEmail,addresses,emails)'         
+          ]
+U_FIELDS = ['name',
+            'relations',
+            'organizations',
+            'phones',
+            'primaryEmail',
+            'addresses',
+            'emails',
+            'thumbnailPhotoUrl']
+
+H_FIELDS = ['nextPageToken',
+                  'users(name,relations,thumbnailPhotoUrl,primaryEmail,addresses)'         
+          ]
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -77,25 +95,49 @@ class Search(webapp2.RequestHandler):
         jsonobject = json.loads(jsonstring)
         self.all_users = []
         query = jsonobject.get('query')
+        
+        # check query has space and then search with word with more number of chars
+        q_l = query.split(' ')
+        if len(q_l) > 1:
+            query = max(q_l)
+        
         logging.info(query)
+        logging.info(q_l)
      
         params = {'domain': 'globalfoundries.com',
                   'orderBy':'email',
                   'viewType':'admin_view',
+                  'fields': ','.join(FIELDS),
                   'query':'familyName:{'+query+'}*' }
 
        
         self.searchUsers(params)
-       
+        
+        
+        
         params = {'domain': 'globalfoundries.com',
                   'orderBy':'email',
                   'viewType':'admin_view',
+                  'fields': ','.join(FIELDS),
                   'query':'givenName:{'+query+'}*' }
 
         self.searchUsers(params)
+        
+        # further filter the results to 
+        if len(q_l) > 1:
+            self.all_users = filter(lambda x: self.filterResults(x,q_l) , self.all_users)
+        
         self.response.headers['Content-Type'] = 'application/json'  
         self.response.write(json.dumps(self.all_users))
     
+    
+    def filterResults(self,x,value):
+        if ( ( bool(re.match(max(value),x.get('name').get('givenName'), re.I)) and bool(re.match(min(value), x.get('name').get('familyName'), re.I)) ) \
+             or  (bool(re.match( min(value),x.get('name').get('givenName'), re.I)) and bool(re.match(max(value), x.get('name').get('familyName'), re.I)) ) ):
+            return True
+        else :
+            return False        
+            
     
     @decorator.get_oauth_build    
     def searchUsers(self,params,directory_service):
@@ -106,20 +148,19 @@ class Search(webapp2.RequestHandler):
                 if page_token:
                     params['pageToken'] = page_token
                 current_page = directory_service.users().list(**params).execute()
-                #current_page = directory_service.files().list(maxResults=10).execute()
-                logging.info( current_page.__class__)
+                
                 if( 'users' in current_page ):
                     self.all_users.extend(current_page['users'])
-                for user in self.all_users:
-                    logging.info( user['primaryEmail'])
+                #for user in self.all_users:
+                    #logging.info( user['primaryEmail'])
                 page_token = current_page.get('nextPageToken')
                 if not page_token:
                     break
             except HTTPError as error:
                 logging.error( 'An error occurred: %s' % error)
                 break
-        logging.info(json.dumps(self.all_users))
-        logging.info(self.all_users.__class__)
+        #logging.info(json.dumps(self.all_users))
+        #logging.info(self.all_users.__class__)
         return None
     
         
@@ -184,7 +225,7 @@ class HeirarchyDetails(webapp2.RequestHandler):
         all_users = []
         page_token = None
         params = {'userKey':manager,
-                  'projection':'full'}
+                  'fields': ','.join(U_FIELDS)}
 
         while True:
             try:
@@ -208,6 +249,7 @@ class HeirarchyDetails(webapp2.RequestHandler):
         params = {'domain': 'globalfoundries.com',
                   'orderBy':'email',
                   'viewType':'admin_view',
+                  'fields': ','.join(H_FIELDS),
                   'query':'directManager='+email
                   }
         reportees = []
@@ -216,7 +258,9 @@ class HeirarchyDetails(webapp2.RequestHandler):
                 if page_token:
                     params['pageToken'] = page_token
                 current_page = directory_service.users().list(**params).execute()
-                reportees = current_page
+                #reportees = current_page
+                if( 'users' in current_page ):
+                    reportees.extend(current_page['users'])
                 #current_page = directory_service.files().list(maxResults=10).execute()
                 logging.info( reportees)
                 
@@ -228,7 +272,7 @@ class HeirarchyDetails(webapp2.RequestHandler):
                 break
 
 
-        jsonobject['children']=reportees.get('users')
+        jsonobject['children']=reportees
         
         logging.info(json.dumps(all_users))
         self.response.headers['Content-Type'] = 'application/json'  

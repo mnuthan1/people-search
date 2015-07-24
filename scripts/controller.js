@@ -1,11 +1,21 @@
-/**
- * 
- */
+/*************************************************************************
+ * Global Foundries
+ *
+ *************************************************************************
+ *
+ * @description
+ * Controller file to make required ajax calls for directory search application
+ * user Jquery APIs
+ * @author
+ * Nuthan Kumar
+ *
+ *************************************************************************/
 
 var getHeirarchy = function(product) {
 	//var query = {'email':email};
 	$.ajax({
 		url : '/getHeirarchy',
+		//url : '/data/heirarchy.json',
 		type : 'post',
 		data : JSON.stringify(product),
 		dataType : 'json',
@@ -18,6 +28,7 @@ var getHeirarchy = function(product) {
 		error : function(e) {
 			//called when there is an error
 			console.log(e.message);
+			$('#Error').show().delay(5000).fadeOut();
 		}
 	});
 };
@@ -39,6 +50,7 @@ var advSearchRequest =  function(email) {
 		error: function(e) {
 			//called when there is an error
 			console.log(e.message);
+			$('#Error').show().delay(3000).fadeOut();
 		  }
 	});
 	// keeps page from not refreshing
@@ -63,6 +75,11 @@ var qSearchRequest =  function(query) {
 		error: function(e) {
 			//called when there is an error
 			console.log(e.message);
+			
+			$('#Error').show().delay(5000).fadeOut();
+			/*.delay(3000).fadeOut(function() {
+				   $(this).remove(); 
+			});*/
 		  }
 	});
 	// keeps page from not refreshing

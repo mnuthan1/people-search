@@ -9,12 +9,15 @@ handlers:
   static_dir: css
 - url: /data
   static_dir: data
+- url: /templates
+  static_dir: templates
 - url: /scripts
   static_dir: scripts
 - url: /img
   static_dir: img
 - url: /.*
   script: main.app
+  secure: always
 
 
 libraries:

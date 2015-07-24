@@ -1,5 +1,5 @@
-/* -- import Roboto Font ---------------------------- */
-/* -- Demo style ------------------------------- */
+
+/* -- Side bar styles ..  uses Bootstrap CSS components  ------------------------------- */
 
 .container {
   position: absolute;
@@ -168,8 +168,8 @@
 .sidebar .sidebar-text {
   display: inline-block;
   min-width: 24px;
-  height: 24px;
-  line-height: 24px;
+  height: 30pxpx;
+  line-height: 30px;
   padding: 0 3px;
   font-size: 10px;
   text-align: left;
@@ -223,16 +223,7 @@
   box-shadow: none;
   outline: none;
 }
-.sidebar .sidebar-nav li a .caret {
-  position: absolute;
-  right: 24px;
-  top: 24px;
-}
-.sidebar .sidebar-nav li a .sidebar-badge {
-  position: absolute;
-  right: 16px;
-  top: 12px;
-}
+
 .sidebar .sidebar-nav li a:hover {
   background: transparent;
 }
@@ -366,20 +357,7 @@
   box-shadow: 2px 0px 15px rgba(0, 0, 0, 0.35);
   -webkit-box-shadow: 2px 0px 15px rgba(0, 0, 0, 0.35);
 }
-/*.sidebar-fixed-right {
-  right: 0;
-  box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.35);
-  -webkit-box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.35);
-  -webkit-transform: translate3d(280px, 0, 0);
-  transform: translate3d(280px, 0, 0);
-}
-.sidebar-fixed-right.open {
-  -webkit-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
-}
-.sidebar-fixed-right .icon-material-sidebar-arrow:before {
-  content: "\e614";
-}*/
+
 @media (max-width: 768px) {
   .sidebar.open {
     min-width: 240px;
