@@ -20,38 +20,13 @@ $(document)
 					// Setup the ajax indicator
 					$('body')
 							.append(
-									'<div id="ajaxBusy"><p><img src="img/jar-loading.gif" height="100" width="100"></p></div>');
+									'<div id="ajaxBusy"><p><img src="img/loading.gif" height="80" width="100"></p></div>');
 
-					$('#ajaxBusy').css({
-						display : "none",
-						position : "fixed",
-						paddingLeft : "0px",
-						paddingRight : "0px",
-						paddingTop : "0px",
-						paddingBottom : "0px",
-						top : "50%",
-						left : "50%"
-					});
 					
 					$('body')
 					.append(
-							'<div id="Error" class="alert alert-danger" role="alert">' +
-							'<strong>Hmm, We can\'t find what you want !!!</strong>'+
-							//'Try with part of First Name (or) Last Name' +
-							'</div>');
+							'<div id="Error" class="alert alert-danger" role="alert"></div>');
 
-					$('#Error').css({
-						display : "none",
-						position : "fixed",
-						paddingLeft : "0px",
-						paddingRight : "0px",
-						paddingTop : "0px",
-						paddingBottom : "0px",
-						top : "10%",
-						left : "35%",
-						width: "25%",
-						height: "60px"
-					});
 
 					// Ajax activity indicator bound to ajax start/stop document
 					// events
@@ -63,12 +38,14 @@ $(document)
 
 					// quick search submit GO button
 					$("#search_submit").click(function() {
-						console.log(" quick seach click");
+						
 						var query = $("#people_search").val();
-
-						console.log(" advSubmit click method " + query);
-
-						qSearchRequest(query);
+						if(query.length >= 3)
+						{
+							qSearchRequest(query);
+						} else {
+							$('#Error').html('<strong>Hmm, We can\'t find what you want !!!</strong> Enter 3 or more characters').show().delay(5000).fadeOut();
+						}
 
 					});
 

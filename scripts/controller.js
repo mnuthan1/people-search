@@ -28,7 +28,7 @@ var getHeirarchy = function(product) {
 		error : function(e) {
 			//called when there is an error
 			console.log(e.message);
-			$('#Error').show().delay(5000).fadeOut();
+			$('#Error').html('<strong>Hmm, We can\'t find what you want !!!</strong> I don\'t know what may have happened..').show().delay(3000).fadeOut();
 		}
 	});
 };
@@ -50,7 +50,7 @@ var advSearchRequest =  function(email) {
 		error: function(e) {
 			//called when there is an error
 			console.log(e.message);
-			$('#Error').show().delay(3000).fadeOut();
+			$('#Error').html('<strong>Hmm, We can\'t find what you want !!!</strong> I don\'t know what may have happened..').show().delay(3000).fadeOut();
 		  }
 	});
 	// keeps page from not refreshing
@@ -76,7 +76,7 @@ var qSearchRequest =  function(query) {
 			//called when there is an error
 			console.log(e.message);
 			
-			$('#Error').show().delay(5000).fadeOut();
+			$('#Error').html('<strong>Hmm, We can\'t find what you want !!!</strong> I don\'t know what may have happened..').show().delay(3000).fadeOut();
 			/*.delay(3000).fadeOut(function() {
 				   $(this).remove(); 
 			});*/

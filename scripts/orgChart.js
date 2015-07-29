@@ -11,6 +11,9 @@
  *
  *************************************************************************/
 
+/****************************************
+ * Function to wrap text under image ..
+ ***************************************/
 function wrap(text, width) {
 	text
 			.each(function() {
@@ -38,9 +41,7 @@ function wrap(text, width) {
 function getSize(d) {
 	var bbox = this.getBBox(), cbbox = this.parentNode.getBBox(), scale = Math
 			.min(cbbox.width / bbox.width, cbbox.height / bbox.height);
-	//console.log(scale);
-	//console.log(d);
-	//console.log(cbbox);
+	
 	d.scale = scale;
 }
 
@@ -62,6 +63,8 @@ function update(source) {
 	// for horizontal
 	//var diagonal = d3.svg.diagonal()
 	//.projection(function(d) { return [d.y, d.x]; });
+	
+	
 	// for verticle
 	var diagonal = d3.svg.diagonal().projection(function(d) {
 		return [ d.x, d.y ];
@@ -83,18 +86,22 @@ function update(source) {
 		}
 	};
 	childCount(0, source);
-	var newWidth = 100 + d3.max(levelWidth) * 60;
+	var newWidth = 100 + d3.max(levelWidth) * 55;
 	var newHeight = levelWidth.length * 160
 	//var tree = d3.layout.tree().size([newHeight, newWidth]);
+	// calculate left new offset -- to show huge chart
+	
+	var newleftOffset = 0;
+	if(d3.max(levelWidth) >=10)
+	{
+		newleftOffset = (d3.max(levelWidth) -10) * 17;
+	}
 	var tree = d3.layout.tree().nodeSize([ 70, 60 ]);
-	//console.log(newHeight);
-	//console.log(newWidth);
-	//console.log(levelWidth.length);
-
+	
 	var svg = d3.select("#orgChart").append("svg").attr("width",
 			newWidth + margin.right + margin.left).attr("height",
 			newHeight + margin.top + margin.bottom).append("g").attr(
-			"transform", "translate(" + margin.left + "," + margin.top + ")");
+			"transform", "translate(" + (margin.left +newleftOffset) + "," + margin.top + ")");
 
 	// Compute the new tree layout.
 	var nodes = tree.nodes(source).reverse(), links = tree.links(nodes);
@@ -104,9 +111,8 @@ function update(source) {
 		d.y = d.depth * 100;
 	});*/
 
-	// Normalize for fixed-depth.
+	// Normalize for variable-depth.
 	nodes.forEach(function(d) {
-		console.log(d);
 		d.y = d.depth * 100;
 		/*if (d.parent != null) {
 			d.x = d.parent.x - (d.parent.children.length - 1) * 30 / 2
@@ -115,9 +121,15 @@ function update(source) {
 		// if the node has too many children, go in and fix their positions to two columns.
 		if (d.children != null && d.children.length > 20) {
 			d.children.forEach(function(d, i) {
+				d.y = (d.depth * 100 + i % 3 * 100);
+				d.x =  d.parent.x - (d.parent.children.length-1)*30/4
+				+ (d.parent.children.indexOf(d))*50/2 - i % 2 * 15;
+			});
+		} else if (d.children != null && d.children.length > 20) {
+			d.children.forEach(function(d, i) {
 				d.y = (d.depth * 100 + i % 2 * 100);
-				//d.x =  d.parent.x - (d.parent.children.length-1)*30/4
-				//+ (d.parent.children.indexOf(d))*30/2 - i % 2 * 15;
+				d.x =  d.parent.x - (d.parent.children.length-1)*30/4
+				+ (d.parent.children.indexOf(d))*70/2 - i % 2 * 15;
 			});
 		}
 	});

@@ -81,6 +81,23 @@
   -o-transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
   transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
 }
+
+/* give media query for height .. this will give scroll bar for side bar */
+
+@media (min-height: 400px) {
+    .sidebar { height: 360px; }
+}
+
+@media (min-height: 500px) {
+    .sidebar { height: 450px; }
+}
+
+@media (min-height: 600px) {
+    .sidebar { height: 550px; }
+}
+
+
+
 .sidebar:before,
 .sidebar:after {
   content: " ";

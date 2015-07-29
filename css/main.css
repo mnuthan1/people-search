@@ -55,6 +55,11 @@ body {
 }
 
 /* org chart */
+
+#orgChart {
+	overflow-y: visible;
+	overflow-x: visible;
+}
 #orgChart .node circle {
 	fill: #fff;
 	stroke: steelblue;
@@ -87,5 +92,31 @@ body {
     box-shadow: #333 2px 2px 4px;
     padding: 8px;
     font-family: arial, helvetica, sans-serif;
+}
+
+/* ERROR message */
+#Error {
+	display : none;
+	position : fixed;
+	paddingLeft : 0px;
+	paddingRight : 0px;
+	paddingTop : 0px",
+	paddingBottom : 0px;
+	top : 10%;
+	left : 35%;
+	width: 25%;
+	height: 60px;
+}
+
+/* Ajax Busy icon */
+#ajaxBusy {
+	display : none;
+	position : fixed;
+	paddingLeft : 0px;
+	paddingRight : 0px;
+	paddingTop : 0px;
+	paddingBottom : 0px;
+	top : 50%;
+	left : 50%;
 }
       

@@ -9,6 +9,7 @@ Attributes:
     SCOPES (LIST): varible to hold google api scopes required for this application
     
     7/22/2015 - Added fileds to the query to reduce payload size
+    7/29/2015 - Added logic to handle CEO's heirarchy chart - with no manager
 
 """
 import logging
@@ -215,35 +216,38 @@ class HeirarchyDetails(webapp2.RequestHandler):
         jsonobject = json.loads(jsonstring)
         email = jsonobject.get('primaryEmail')
         manager = None
-        for dest in jsonobject['relations']:
-            if dest['type'] == 'manager':
-                manager = dest['value']
+        if('relations' in jsonobject):
+            for dest in jsonobject['relations']:
+                if dest['type'] == 'manager':
+                    manager = dest['value']
           
         logging.info ("email"+email);
-        logging.info ("manager"+manager);
         
+        # no manager for him - to handle CEOs chart
         all_users = []
-        page_token = None
-        params = {'userKey':manager,
-                  'fields': ','.join(U_FIELDS)}
-
-        while True:
-            try:
-                if page_token:
-                    params['pageToken'] = page_token
-                current_page = directory_service.users().get(**params).execute()
-                all_users = current_page
-                #current_page = directory_service.files().list(maxResults=10).execute()
-                logging.info( current_page)
-                
-                page_token = current_page.get('nextPageToken')
-                if not page_token:
+        if(manager):
+            
+            page_token = None
+            params = {'userKey':manager,
+                      'fields': ','.join(U_FIELDS)}
+    
+            while True:
+                try:
+                    if page_token:
+                        params['pageToken'] = page_token
+                    current_page = directory_service.users().get(**params).execute()
+                    all_users = current_page
+                    #current_page = directory_service.files().list(maxResults=10).execute()
+                    logging.info( current_page)
+                    
+                    page_token = current_page.get('nextPageToken')
+                    if not page_token:
+                        break
+                except HTTPError as error:
+                    logging.error( 'An error occurred: %s' % error)
                     break
-            except HTTPError as error:
-                logging.error( 'An error occurred: %s' % error)
-                break
-        
-        all_users['children']=[jsonobject]
+            
+            all_users['children']=[jsonobject]
         # get immediate reportees for the selected user
         
         params = {'domain': 'globalfoundries.com',
@@ -253,6 +257,7 @@ class HeirarchyDetails(webapp2.RequestHandler):
                   'query':'directManager='+email
                   }
         reportees = []
+        page_token = None
         while True:
             try:
                 if page_token:
@@ -273,8 +278,9 @@ class HeirarchyDetails(webapp2.RequestHandler):
 
 
         jsonobject['children']=reportees
-        
-        logging.info(json.dumps(all_users))
         self.response.headers['Content-Type'] = 'application/json'  
         self.response.headers.add_header("Access-Control-Allow-Origin", "*")
-        self.response.write(json.dumps(all_users))
+        if(len(all_users) > 0):
+            self.response.write(json.dumps(all_users))
+        else:
+            self.response.write(json.dumps(jsonobject))
