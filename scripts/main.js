@@ -40,8 +40,10 @@ $(document)
 					$("#search_submit").click(function() {
 						
 						var query = $("#people_search").val();
+						
 						if(query.length >= 3)
 						{
+							
 							qSearchRequest(query);
 						} else {
 							$('#Error').html('<strong>Hmm, We can\'t find what you want !!!</strong> Enter 3 or more characters').show().delay(5000).fadeOut();
@@ -99,13 +101,37 @@ $(document)
 						});
 					});
 					
+					
+					/* attach enter event to the text box */
+					$.fn.pressEnter = function(fn) {  
+						  
+					    return this.each(function() {  
+					        $(this).bind('enterPress', fn);
+					        $(this).keydown(function(e){
+					        	
+					            if(e.which == 13)
+					            {
+					               return false;
+					            }
+					        });
+					        $(this).keyup(function(e){
+					        	
+					            if(e.which == 13)
+					            {
+					            	e.preventDefault();
+					            	 $(this).trigger("enterPress");
+					            	return false;
+					              
+					            }
+					        });
+					    });  
+					 }; 
 
-					// attach enter event to main search box
-					$("#people_search").keyup(function(event) {
-						if (event.keyCode == 13) {
-							$("#search_submit").click();
-						}
-					});
+
+					$('#people_search').pressEnter(function(){$('#search_submit').click();})
+					
+										
+					
 
 					//	toggle side bar
 
