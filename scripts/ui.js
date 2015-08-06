@@ -111,8 +111,16 @@ var renderDetails = function(product) {
 			+ "<tr class=\"active\">" + "<td>Department</td> " + "<td>"
 			+ product.organizations[0].department + "</td>" + "</tr>"
 			+ "<tr class=\"active\">" + "<td>Company</td> " + "<td>"
-			+ product.organizations[0].name + "</td>" + "</tr>" + "</table>"
-			+ "</div>";
+			+ product.organizations[0].name + "</td>" + "</tr>";
+			for (ele in product.externalIds)
+			{
+				//console.log(JSON.stringify(ele));
+				s +=  "<tr class=\"active\"> <td>" +product.externalIds[ele].type +"</td>" 
+				s +=  "<td>" +product.externalIds[ele].value +"</td> </tr>" 
+			}
+	
+			s+= "</table>"
+				+ "</div>";
 
 	s += "</div>" + "</div>";
 

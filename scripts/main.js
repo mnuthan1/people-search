@@ -153,4 +153,14 @@ $(document)
 						  $("#temp").remove();
 						}
 
+					
+					// modified to call quick search function in order to support home page
+					var query = $("#people_search").val();
+					
+					if(query.length >= 3)
+					{						
+						qSearchRequest(query);
+					} else if(query.length > 0) {
+						$('#Error').html('<strong>Hmm, We can\'t find what you want !!!</strong> Enter 3 or more characters').show().delay(5000).fadeOut();
+					}
 				});

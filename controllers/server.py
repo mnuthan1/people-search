@@ -25,11 +25,11 @@ import re
 
 from decorators import decorator
 
-SCOPES = ["https://www.googleapis.com/auth/admin.directory.user",
+SCOPES = [
             "https://www.googleapis.com/auth/admin.directory.user.readonly"] 
 
 FIELDS = ['nextPageToken',
-                  'users(name,relations,organizations,phones,thumbnailPhotoUrl,primaryEmail,addresses,emails)'         
+                  'users(name,relations,organizations,phones,thumbnailPhotoUrl,primaryEmail,addresses,emails,externalIds)'         
           ]
 U_FIELDS = ['name',
             'relations',
@@ -53,7 +53,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 class RootPage(webapp2.RequestHandler):
     @decorator.custom_login_required
-    def get(self):
+    def get(self,param = ""):
         # check for user active session
         user = users.get_current_user()
         if user:
@@ -71,6 +71,7 @@ class RootPage(webapp2.RequestHandler):
             'user': user,
             'url': url,
             'url_linktext': url_linktext,
+            'param':param,
         }
         jinja_environment = self.jinja_environment
         template = jinja_environment.get_template("/index.html")
@@ -90,21 +91,21 @@ class RootPage(webapp2.RequestHandler):
 
 class Search(webapp2.RequestHandler):
     all_users = []
+   
     @decorator.custom_login_required
     def post(self):
         jsonstring = self.request.body
         jsonobject = json.loads(jsonstring)
         self.all_users = []
         query = jsonobject.get('query')
-        
+        keepcharacters = (' ','.','_')
+        query = "".join(c for c in query if c.isalnum() or c in keepcharacters).rstrip()
         # check query has space and then search with word with more number of chars
         q_l = query.split(' ')
         if len(q_l) > 1:
             query = max(q_l)
         
-        logging.info(query)
-        logging.info(q_l)
-     
+        
         params = {'domain': 'globalfoundries.com',
                   'orderBy':'email',
                   'viewType':'admin_view',
@@ -133,11 +134,17 @@ class Search(webapp2.RequestHandler):
     
     
     def filterResults(self,x,value):
-        if ( ( bool(re.match(max(value),x.get('name').get('givenName'), re.I)) and bool(re.match(min(value), x.get('name').get('familyName'), re.I)) ) \
+        '''if ( ( bool(re.match(max(value),x.get('name').get('givenName'), re.I)) and bool(re.match(min(value), x.get('name').get('familyName'), re.I)) ) \
              or  (bool(re.match( min(value),x.get('name').get('givenName'), re.I)) and bool(re.match(max(value), x.get('name').get('familyName'), re.I)) ) ):
             return True
         else :
-            return False        
+            return False'''
+        
+        if ( ( bool(re.search(r"\b"+max(value),x.get('name').get('givenName'), re.I)) and bool(re.search(r"\b"+min(value), x.get('name').get('familyName'), re.I)) ) \
+              or  (bool(re.search( r"\b"+min(value),x.get('name').get('givenName'), re.I)) and bool(re.search(r"\b"+max(value), x.get('name').get('familyName'), re.I)) ) ):
+            return True
+        else :
+            return False            
             
     
     @decorator.get_oauth_build    
@@ -173,7 +180,7 @@ class AdvSearch(webapp2.RequestHandler):
         jsonstring = self.request.body
         jsonobject = json.loads(jsonstring)
         email = jsonobject.get('email')
-        logging.info (email);
+        
         '''region = self.request.get('region')
         manager = self.request.get('manager')
         fname = self.request.get('fname')
@@ -191,7 +198,7 @@ class AdvSearch(webapp2.RequestHandler):
                 current_page = directory_service.users().get(**params).execute()
                 all_users = current_page
                 #current_page = directory_service.files().list(maxResults=10).execute()
-                logging.info( current_page)
+                #logging.info( current_page)
                 
                 page_token = current_page.get('nextPageToken')
                 if not page_token:
@@ -199,7 +206,7 @@ class AdvSearch(webapp2.RequestHandler):
             except HTTPError as error:
                 logging.error( 'An error occurred: %s' % error)
                 break
-        logging.info(json.dumps(all_users))
+        
         self.response.headers['Content-Type'] = 'application/json'  
         self.response.headers.add_header("Access-Control-Allow-Origin", "*")
         self.response.write(json.dumps(all_users))
@@ -221,7 +228,6 @@ class HeirarchyDetails(webapp2.RequestHandler):
                 if dest['type'] == 'manager':
                     manager = dest['value']
           
-        logging.info ("email"+email);
         
         # no manager for him - to handle CEOs chart
         all_users = []
@@ -238,7 +244,7 @@ class HeirarchyDetails(webapp2.RequestHandler):
                     current_page = directory_service.users().get(**params).execute()
                     all_users = current_page
                     #current_page = directory_service.files().list(maxResults=10).execute()
-                    logging.info( current_page)
+                    #logging.info( current_page)
                     
                     page_token = current_page.get('nextPageToken')
                     if not page_token:
@@ -267,7 +273,7 @@ class HeirarchyDetails(webapp2.RequestHandler):
                 if( 'users' in current_page ):
                     reportees.extend(current_page['users'])
                 #current_page = directory_service.files().list(maxResults=10).execute()
-                logging.info( reportees)
+                #logging.info( reportees)
                 
                 page_token = current_page.get('nextPageToken')
                 if not page_token:

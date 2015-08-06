@@ -15,9 +15,13 @@ handlers:
   static_dir: scripts
 - url: /img
   static_dir: img
+- url: /api/.*
+  script: endpoints.endpoints
+  secure: always
 - url: /.*
   script: main.app
   secure: always
+ 
 
 
 libraries:

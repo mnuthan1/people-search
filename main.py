@@ -22,10 +22,11 @@ from controllers import server
 
 app = webapp2.WSGIApplication([
 	('/', server.RootPage),
-	('/search', server.Search),
-	('/advsearch', server.AdvSearch),
+    ('/search', server.Search),
+    ('/advsearch', server.AdvSearch),
     ('/getHeirarchy', server.HeirarchyDetails),
-    
+    ('/([^/]+)/?',server.RootPage),
+
 ], debug=True)
 
 

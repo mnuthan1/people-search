@@ -14,13 +14,18 @@ import os
 from oauth2client.client import SignedJwtAssertionCredentials
 import httplib2
 from apiclient.discovery import build
-
+import logging
+from controllers.AESCipher import Cipher
+from google.appengine.ext import db
+import json
+from model.application import Application
+import datetime
 
 
 SCOPES = ["https://www.googleapis.com/auth/admin.directory.user",
             "https://www.googleapis.com/auth/admin.directory.user.readonly"] 
 
-sub = 'nuthankumar.mallavaram@globalfoundries.com'
+sub = 'People.Search_App@globalfoundries.com'
 service_account_email = '1025736752504-ublfj5g4am94o31ihnger3c5f6avfd5v@developer.gserviceaccount.com'
 
 def custom_login_required(handler_method):
@@ -37,6 +42,7 @@ def custom_login_required(handler_method):
         #if self.request.method != 'GET':
             #raise HTTPError('The check_login decorator can only be used for GET equests')
         user = users.get_current_user()
+        
         if not user:
             self.redirect(users.create_login_url(self.request.uri))
             return
@@ -59,7 +65,7 @@ def get_oauth_build(handler_method):
     Returns:
         handler method
     """
-    def get_token(self,*args):
+    def get_token(*args):
         key_file_location = './privatekey.pem'
         f = open(key_file_location, 'rb')
         key = f.read()
@@ -69,6 +75,42 @@ def get_oauth_build(handler_method):
         http = credentials.authorize(httplib2.Http())
         
         directory_service = build('admin', 'directory_v1',http=http)
-        
-        handler_method(self, directory_service=directory_service,*args)
+        return handler_method( directory_service=directory_service,*args)
     return get_token
+
+
+def app_auth_required(handler_method):
+    """decorator function to get app authentication
+    
+    parameter lsit::
+
+        *args
+   
+    Returns:
+        handler method
+    """
+    def check_app(self,*args):
+        
+        '''for app in Application.query():
+            logging.info(app)'''
+        
+        
+        
+        employee = Application(name='Baldy',
+                    key_value='30268571906095969171095037735651',
+                    owner='John Ruby',
+                    registered=datetime.datetime.now())
+        
+        employee.put()
+        
+        q = db.Query(Application)
+        for app in q:
+            KEY = app.key_value
+            msg = Cipher.decrypt(self.request.headers['app-identifier'],KEY)
+            if self.request.path == msg:
+                return handler_method(self, *args)
+        
+        error_msg = '{"error": "401 Not a Registered APP"}'
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(json.dumps(error_msg))
+    return check_app

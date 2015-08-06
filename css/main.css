@@ -10,6 +10,8 @@ body {
 	/* Required padding for .navbar-fixed-top. Change if height of navigation changes. */
 }
 
+
+
 .navbar-fixed-top .nav {
 	padding: 15px 0;
 }
@@ -81,17 +83,21 @@ body {
 }
 
 
-#orgChart .popup {
+#orgChart .contextpopup {
     position: absolute;
-    left: 0;
-    top: 0;
     background-color: #fff;
-    width: 200px;
+    width: 160px;
+    height: 30px;
     border: 1px #ccc solid;
     border-radius: 6px;
     box-shadow: #333 2px 2px 4px;
     padding: 8px;
     font-family: arial, helvetica, sans-serif;
+}
+
+
+#orgChart .contextpopup a {
+    color: inherit;
 }
 
 /* ERROR message */

@@ -1,5 +1,9 @@
 eclipse.preferences.version=1
+encoding//controllers/AESCipher.py=utf-8
+encoding//controllers/api.py=utf-8
 encoding//controllers/server.py=utf-8
 encoding//decorators/decorator.py=utf-8
+encoding//model/application.py=utf-8
 encoding/appengine_config.py=utf-8
+encoding/endpoints.py=utf-8
 encoding/main.py=utf-8
