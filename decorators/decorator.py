@@ -96,13 +96,20 @@ def app_auth_required(handler_method):
         
         
         
-        employee = Application(name='Baldy',
+        '''employee = Application(name='Baldy',
                     key_value='30268571906095969171095037735651',
                     owner='John Ruby',
                     registered=datetime.datetime.now())
         
         employee.put()
         
+        
+        employee = Application(name='SaR',
+                    key_value='13330882595296274438817752025604',
+                    owner='Gregg Reynolds',
+                    registered=datetime.datetime.now())
+        
+        employee.put()'''
         q = db.Query(Application)
         for app in q:
             KEY = app.key_value
