@@ -24,7 +24,7 @@ app = webapp2.WSGIApplication([
 	('/', server.RootPage),
     ('/search', server.Search),
     ('/advsearch', server.AdvSearch),
-    ('/getHeirarchy', server.HeirarchyDetails),
+    ('/getHierarchy', server.HierarchyDetails),
     ('/([^/]+)/?',server.RootPage),
 
 ], debug=True)

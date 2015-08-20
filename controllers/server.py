@@ -23,13 +23,14 @@ import jinja2
 import json
 import re
 
+
 from decorators import decorator
 
 SCOPES = [
             "https://www.googleapis.com/auth/admin.directory.user.readonly"] 
 
 FIELDS = ['nextPageToken',
-                  'users(name,relations,organizations,phones,thumbnailPhotoUrl,primaryEmail,addresses,emails,externalIds)'         
+                  'users(name,relations,organizations,phones,thumbnailPhotoUrl,primaryEmail,addresses,emails,externalIds,suspended)'         
           ]
 U_FIELDS = ['name',
             'relations',
@@ -38,7 +39,9 @@ U_FIELDS = ['name',
             'primaryEmail',
             'addresses',
             'emails',
-            'thumbnailPhotoUrl']
+            'thumbnailPhotoUrl',
+            'externalIds',
+            'suspended']
 
 H_FIELDS = ['nextPageToken',
                   'users(name,relations,thumbnailPhotoUrl,primaryEmail,addresses)'         
@@ -98,53 +101,28 @@ class Search(webapp2.RequestHandler):
         jsonobject = json.loads(jsonstring)
         self.all_users = []
         query = jsonobject.get('query')
-        keepcharacters = (' ','.','_')
-        query = "".join(c for c in query if c.isalnum() or c in keepcharacters).rstrip()
-        # check query has space and then search with word with more number of chars
-        q_l = query.split(' ')
-        if len(q_l) > 1:
-            query = max(q_l)
         
         
         params = {'domain': 'globalfoundries.com',
                   'orderBy':'email',
                   'viewType':'admin_view',
                   'fields': ','.join(FIELDS),
-                  'query':'familyName:{'+query+'}*' }
+                  'query':query }
 
        
         self.searchUsers(params)
         
-        
-        
-        params = {'domain': 'globalfoundries.com',
-                  'orderBy':'email',
-                  'viewType':'admin_view',
-                  'fields': ','.join(FIELDS),
-                  'query':'givenName:{'+query+'}*' }
-
-        self.searchUsers(params)
-        
-        # further filter the results to 
-        if len(q_l) > 1:
-            self.all_users = filter(lambda x: self.filterResults(x,q_l) , self.all_users)
+        # further filter the results to remove suspended users
+        if( not bool(re.search(r"\bisSuspended=false",query, re.I))):
+            self.all_users = filter(lambda x: self.filterResults(x) , self.all_users)
         
         self.response.headers['Content-Type'] = 'application/json'  
         self.response.write(json.dumps(self.all_users))
     
     
-    def filterResults(self,x,value):
-        '''if ( ( bool(re.match(max(value),x.get('name').get('givenName'), re.I)) and bool(re.match(min(value), x.get('name').get('familyName'), re.I)) ) \
-             or  (bool(re.match( min(value),x.get('name').get('givenName'), re.I)) and bool(re.match(max(value), x.get('name').get('familyName'), re.I)) ) ):
-            return True
-        else :
-            return False'''
-        
-        if ( ( bool(re.search(r"\b"+max(value),x.get('name').get('givenName'), re.I)) and bool(re.search(r"\b"+min(value), x.get('name').get('familyName'), re.I)) ) \
-              or  (bool(re.search( r"\b"+min(value),x.get('name').get('givenName'), re.I)) and bool(re.search(r"\b"+max(value), x.get('name').get('familyName'), re.I)) ) ):
-            return True
-        else :
-            return False            
+    def filterResults(self,x):
+        return not x.get('suspended')  
+         
             
     
     @decorator.get_oauth_build    
@@ -181,11 +159,7 @@ class AdvSearch(webapp2.RequestHandler):
         jsonobject = json.loads(jsonstring)
         email = jsonobject.get('email')
         
-        '''region = self.request.get('region')
-        manager = self.request.get('manager')
-        fname = self.request.get('fname')
-        lname = self.request.get('lname')'''
-        
+       
         all_users = []
         page_token = None
         params = {'userKey':email,
@@ -214,7 +188,36 @@ class AdvSearch(webapp2.RequestHandler):
 
 
 
-class HeirarchyDetails(webapp2.RequestHandler):
+class HierarchyDetails(webapp2.RequestHandler):
+    
+    
+    def getReportees(self,email,directory_service):
+        
+        reportees = []
+        params = {'domain': 'globalfoundries.com',
+                  'orderBy':'email',
+                  'viewType':'admin_view',
+                  'fields': ','.join(FIELDS),
+                  'query':'directManager='+email.lower()+' isSuspended=false'
+                  }
+        page_token = None
+        while True:
+            try:
+                if page_token:
+                    params['pageToken'] = page_token
+                current_page = directory_service.users().list(**params).execute()
+                
+                if( 'users' in current_page ):
+                    reportees.extend(current_page['users'])
+               
+                page_token = current_page.get('nextPageToken')
+                if not page_token:
+                    break
+            except HTTPError as error:
+                logging.error( 'An error occurred: %s' % error)
+                break
+        return reportees
+    
     @decorator.custom_login_required
     @decorator.get_oauth_build
     def post(self,directory_service):
@@ -253,37 +256,19 @@ class HeirarchyDetails(webapp2.RequestHandler):
                     logging.error( 'An error occurred: %s' % error)
                     break
             
-            all_users['children']=[jsonobject]
+            all_users['children']=self.getReportees(manager,directory_service)
+            reportees = self.getReportees(email,directory_service)
+            if len(reportees) > 0:
+                for user in all_users['children']:
+                    if user['primaryEmail'] == email:
+                        user['children'] = reportees
+        else :
+            all_users = jsonobject
+            all_users['children'] = self.getReportees(email,directory_service)
         # get immediate reportees for the selected user
-        
-        params = {'domain': 'globalfoundries.com',
-                  'orderBy':'email',
-                  'viewType':'admin_view',
-                  'fields': ','.join(H_FIELDS),
-                  'query':'directManager='+email
-                  }
-        reportees = []
-        page_token = None
-        while True:
-            try:
-                if page_token:
-                    params['pageToken'] = page_token
-                current_page = directory_service.users().list(**params).execute()
-                #reportees = current_page
-                if( 'users' in current_page ):
-                    reportees.extend(current_page['users'])
-                #current_page = directory_service.files().list(maxResults=10).execute()
-                #logging.info( reportees)
-                
-                page_token = current_page.get('nextPageToken')
-                if not page_token:
-                    break
-            except HTTPError as error:
-                logging.error( 'An error occurred: %s' % error)
-                break
-
-
-        jsonobject['children']=reportees
+       
+       
+        #jsonobject['children']=reportees
         self.response.headers['Content-Type'] = 'application/json'  
         self.response.headers.add_header("Access-Control-Allow-Origin", "*")
         if(len(all_users) > 0):

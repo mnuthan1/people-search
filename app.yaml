@@ -1,5 +1,5 @@
-application: peoplesearch-999
-version: 2
+application:  gfpeoplesearch
+version: 1
 runtime: python27
 api_version: 1
 threadsafe: true

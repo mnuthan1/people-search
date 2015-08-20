@@ -19,11 +19,10 @@ from controllers.AESCipher import Cipher
 from google.appengine.ext import db
 import json
 from model.application import Application
-import datetime
 
 
-SCOPES = ["https://www.googleapis.com/auth/admin.directory.user",
-            "https://www.googleapis.com/auth/admin.directory.user.readonly"] 
+
+SCOPES = ["https://www.googleapis.com/auth/admin.directory.user.readonly"] 
 
 sub = 'People.Search_App@globalfoundries.com'
 service_account_email = '1025736752504-ublfj5g4am94o31ihnger3c5f6avfd5v@developer.gserviceaccount.com'
@@ -91,30 +90,16 @@ def app_auth_required(handler_method):
     """
     def check_app(self,*args):
         
-        '''for app in Application.query():
-            logging.info(app)'''
-        
-        
-        
-        '''employee = Application(name='Baldy',
-                    key_value='30268571906095969171095037735651',
-                    owner='John Ruby',
-                    registered=datetime.datetime.now())
-        
-        employee.put()
-        
-        
-        employee = Application(name='SaR',
-                    key_value='13330882595296274438817752025604',
-                    owner='Gregg Reynolds',
-                    registered=datetime.datetime.now())
-        
-        employee.put()'''
         q = db.Query(Application)
+        name = self.request.headers['app-identifier-name']
+        KEY = self.request.headers['app-identifier-key']
+        logging.info(name +':'+KEY)
+        return handler_method(self, *args)
         for app in q:
-            KEY = app.key_value
-            msg = Cipher.decrypt(self.request.headers['app-identifier'],KEY)
-            if self.request.path == msg:
+            '''KEY = app.key_value
+            msg = Cipher.decrypt(self.request.headers['app-identifier'],KEY)'''
+            logging.info(app.app_name +':'+app.key_value)
+            if name == app.app_name and KEY == app.key_value:
                 return handler_method(self, *args)
         
         error_msg = '{"error": "401 Not a Registered APP"}'

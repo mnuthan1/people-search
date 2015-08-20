@@ -96,6 +96,10 @@
     .sidebar { height: 550px; }
 }
 
+@media (min-height: 800px) {
+    .sidebar { height: 750px; }
+}
+
 
 
 .sidebar:before,
@@ -188,7 +192,7 @@
   height: 30pxpx;
   line-height: 30px;
   padding: 0 3px;
-  font-size: 10px;
+  font-size: 11px;
   text-align: left;
   white-space: nowrap;
   vertical-align: baseline;
@@ -196,7 +200,7 @@
 
 .sidebar .sidebar-text  {
   position: absolute;
-  top: 8px;
+  top: 7px;
 }
 
 
@@ -353,8 +357,8 @@
   transform: translate3d(-280px, 0, 0);
 }
 .sidebar.open {
-  min-width: 280px;
-  width: 280px;
+  min-width: 300px;
+  width: 300px;
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
 }

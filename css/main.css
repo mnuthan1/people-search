@@ -3,32 +3,14 @@
  */
 html, body {
 	overflow-y: visible;
-}
-
-body {
-	padding-top: 70px;
-	/* Required padding for .navbar-fixed-top. Change if height of navigation changes. */
+	font-size:11px;
 }
 
 
-
-.navbar-fixed-top .nav {
-	padding: 15px 0;
+.wrap-text {
+	padding-left: 130px;
 }
 
-.navbar-fixed-top .navbar-brand {
-	padding: 0 15px;
-}
-
-@media ( min-width :768px) {
-	body {
-		padding-top: 100px;
-		/* Required padding for .navbar-fixed-top. Change if height of navigation changes. */
-	}
-	.navbar-fixed-top .navbar-brand {
-		padding: 15px 0;
-	}
-}
 
 #advSerachModal {
 	display: none;
@@ -86,8 +68,8 @@ body {
 #orgChart .contextpopup {
     position: absolute;
     background-color: #fff;
-    width: 160px;
-    height: 30px;
+    width: 120px;
+    height: 25px;
     border: 1px #ccc solid;
     border-radius: 6px;
     box-shadow: #333 2px 2px 4px;
@@ -124,5 +106,58 @@ body {
 	paddingBottom : 0px;
 	top : 50%;
 	left : 50%;
+	z-index:1001;
 }
+
+
+.filter{
+	padding: 1px;
+	font-size: 8px;
+	border-radius: 10px;
+	border: 1px solid #c0c0c0;
+	outline: none;
+	margin-left: 30px;
+}
+
+
+.node {
+    cursor: pointer;
+  }
+
+  .overlay{
+      background-color:#EEE;
+  }
+   
+  .node circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+  }
+   
+  .node text {
+    font-size:10px; 
+    font-family:sans-serif;
+  }
+   
+  .link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+  }
+  
+   
+
+  .templink {
+    fill: none;
+    stroke: red;
+    stroke-width: 3px;
+  }
+
+  .ghostCircle.show{
+      display:block;
+  }
+
+  .ghostCircle, .activeDrag .ghostCircle{
+       display: none;
+  }
       

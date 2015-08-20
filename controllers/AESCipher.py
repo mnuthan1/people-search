@@ -11,7 +11,6 @@ from Crypto.Cipher import AES
 import base64
 from Crypto import Random
 import logging
-import string
 
 BS = 16
 pad = lambda s: s + (BS - len(s) % BS) * '\f'
@@ -23,11 +22,12 @@ class Cipher:
     @staticmethod
     def decrypt( enc,key ):
         enc = base64.b64decode(enc)
+        
         #logging.info(enc);
         iv = enc[:16]
         cipher = AES.new(key, AES.MODE_CBC, iv )
         dec = cipher.decrypt( enc[16:] )
-        #logging.info(dec)
+        logging.info(dec)
         #logging.info( unpad(dec))
         return unpad(dec)
 

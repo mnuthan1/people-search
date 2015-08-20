@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% autoescape true %}
+
 <html>
 <head>
 <meta charset="utf-8">
@@ -22,12 +22,19 @@
 	src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script 
 	src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
 
 <!-- <script src="./scripts/ext/bootstrap-typeahead.js"></script> -->
-<script src="./scripts/orgChart.js"></script>
-<!-- <script src="./scripts/TypeAhead.js"></script> -->
+<!--   <script src="./scripts/orgChart.js"></script>
+
 <script src="./scripts/controller.js"></script>
 <script src="./scripts/ui.js"></script>
+<script src="./scripts/main.js"></script>-->
+<!-- <script src="./scripts/TypeAhead.js"></script> -->
+
+<script src = "./scripts/search/search.js"></script>
+<script src = "./scripts/search/search.filter.js"></script>
+<script src = "./scripts/search/orgchart.controller.js"></script>
 <script src="./scripts/main.js"></script>
 <link type="text/css" rel="stylesheet" href="./css/main.css" />
 <link type="text/css" rel="stylesheet" href="./css/sidebar.css" />
@@ -35,55 +42,79 @@
 
 </head>
 
-<body ng-app="search">
+<body id="peoplesearch" ng-app="search" ng-controller="SearchBox as sb">
 
+<div id="Error" class="alert alert-danger" role="alert"></div>
+<div id="ajaxBusy"><p><img src="img/loading.gif" height="80" width="100"></p></div>
+    
+<div class="navbar navbar-default" >
+ 			<div class="navbar-header">
+                <button class="navbar-toggle" type="button" data-target=".navbar-collapse" data-toggle="collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <div class = "visible-lg" style = "margin-top: 4px; margin-left:5px;width: 400px; height: 50px; overflow: hidden; border-radius:20px">
+					<img src="./img/Directory_Search.gif" style="margin-top: -10px; margin-left: -1px;  height:68px;">
+                </div>
+                <div class = "visible-sm visible-xs" style = "margin-top: 4px; margin-left:5px;width: 40px; height: 50px; overflow: hidden; border-radius:20px">
+					<img src="./img/logo.jpeg" style="margin-top: -10px; margin-left: -1px;  height:68px;">
+                </div>
+            </div>
+            
+            <div class="collapse navbar-collapse">
+               
+				<div class="col-sm-5">
+					<form class="navbar-form" role="search">
+						<div class="input-group col-sm-12">
+						
+																
+						<input type="text" class="form-control" id="search" value= "{{param}}"  placeholder="Search" ng-model="selector" onkeydown="if (event.keyCode == 13) document.getElementById('search_submit').click()">
+							
+							<div class="input-group-btn">
+							<button class="btn btn-default clearer"  id="btnClearSearch" type="button" ng-show="selector" ng-click="executeClearSearch()" ><i class="glyphicon glyphicon-remove-circle"></i></button>
 
-	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-		<div class="navbar-inner">
-			<!--changes made here-->
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<div class="row">
-						<div class="col-xs-3">
-							<img class="img-responsive" src="./img/Directory_Search.gif"
-								alt="">
-						</div>
-						<div class="col-xs-6">
-							<form class="navbar-form navbar-left" role="search">
-								<div class="input-group" style="">
-								
-									<input type="text" class="form-control" id="people_search"
-										size="400" aria-label="People Search" value= "{{param}}"
-										placeholder="Search">
+							<button type="button" id="advsearch" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-target="#advSerachModal"  aria-expanded="false"><span class="caret"></span></button>
+		
 										
-									<div id="product"
-										style="border-width: 1; padding: 5px; border-style: solid"></div>
-									<div class="input-group-btn">
-										<!--<span class="glyphicon glyphicon-search input-group-addon" aria-hidden="true"></span>-->
-										<!--  <button type="button" class="btn btn-default dropdown-toggle"
-											data-toggle="dropdown" aria-expanded="false" id="advsearch">
-											<span class="caret"></span> <span class="sr-only">Advanced
-												Search</span>
-										</button>-->
-										
-										<button type="button" class="btn btn-success" id ="search_submit">Go</button>
-									</div>
-								</div>
-							</form>
+							<button class="btn btn-default"  id="search_submit" type="button"  ng-click="executeSearch()" ><i class="glyphicon glyphicon-search"></i></button>
+							
+							</div>
+						    
 						</div>
-						<div class="col-xs-3">
-							<form class="navbar-form navbar-left" role="search">
-								<h6>
-									{% if user %} {{user.nickname()}} {% else %} An anonymous
-									person {% endif %} [<a href="{{ url|safe }}">{{
-										url_linktext }}</a>]
-								</h6>
-							</form>
-						</div>
-					</div>
+					</form>
 				</div>
-			</div>
-	</nav>
+                 <ul class="nav navbar-nav navbar-right">
+					
+					<!-- <li class="dropdown">
+                        <a class="dropdown-toggle" href="#" data-toggle="dropdown">?<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                          
+                            <li><a href="#">Help</a>
+                            </li>
+                            <li class="divider"></li>
+                     
+                            <li><a href="#" onclick="$('#About').modal('show');">About</a>
+                            </li>
+                       
+                        </ul>
+					</li>-->
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                        {% if user %} {{user.nickname()}} {% else %} An anonymous
+									person {% endif %} 
+										
+										<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="https://accounts.google.com/logout">Logout</a></li>
+
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+    </div>        
+	
 
 
 	<div class="well" id="advSerachModal">
@@ -94,22 +125,22 @@
 				<div class="col-sm-4 col-md-6 ">
 					<div class="form-group form-group-sm">
 						<label for="fname"
-							class="col-md-5 col-sm-1 control-label form-group input-sm">First
+							class="col-md-5 col-sm-1 control-label form-group input-sm">Given
 							Name</label>
 						<div class="col-md-7 col-sm-1">
-							<input type="email" class="form-control input-sm hasclear" id="fname"
-								placeholder="First Name">
+							<input type="text" class="form-control input-sm hasclear" id="fname"
+								placeholder="First Name" ng-model="fname">
 						</div>
 					</div>
 				</div>
 				<div class="col-sm-4 col-lg-6">
 					<div class="form-group">
 						<label for="lname"
-							class="col-md-5 col-sm-1 control-label form-group input-sm">Last
+							class="col-md-5 col-sm-1 control-label form-group input-sm">Family
 							Name</label>
 						<div class="col-md-7 col-sm-1">
-							<input type="email" class="form-control input-sm hasclear" id="lname"
-								placeholder="Last Name">
+							<input type="text" class="form-control input-sm hasclear" id="lname"
+								placeholder="Last Name" ng-model="lname">
 						</div>
 					</div>
 				</div>
@@ -120,8 +151,8 @@
 						<label for="inputEmail"
 							class="col-md-5 col-sm-1  control-label form-group input-sm">Email:</label>
 						<div class="col-md-7 col-sm-1">
-							<input type="email" class="form-control input-sm hasclear" id="inputEmail"
-								placeholder="Email">
+							<input type="text" class="form-control input-sm hasclear" id="inputEmail"
+								placeholder="Email" ng-model="inputEmail">
 						</div>
 					</div>
 				</div>
@@ -133,7 +164,7 @@
 							Manager:</label>
 						<div class="col-md-7 col-sm-1">
 							<input type="text" class="form-control input-sm hasclear" id="manager"
-								placeholder="By Manager">
+								placeholder="By Manager" ng-model="manager">
 						</div>
 					</div>
 				</div>
@@ -141,24 +172,44 @@
 			<div class="row no-gutter">
 				<div class="col-sm-4 col-md-4 col-lg-6">
 					<div class="form-group">
-						<label for="region"
-							class="col-md-5 col-sm-1 control-label form-group input-sm">Region</label>
+						<label for="locality"
+							class="col-md-5 col-sm-1 control-label form-group input-sm">Locality</label>
 						<div class="col-md-7 col-sm-1 ">
-							<input type="text" class="form-control input-sm hasclear" id="region"
-								placeholder="Region">
+						 <select class="selectpicker form-control input-sm hasclear" id="locality"
+								placeholder="Locality" ng-model="locality">
+						    <option ng-repeat="item in localities" value="{[{item}]}">{[{item}]}</option>
+						   
+						  </select>
+							
 						</div>
 					</div>
 				</div>
+				
+				<div class="col-sm-4 col-md-4 col-lg-6">
+					<div class="form-group">
+						<label for="region"
+							class="col-md-5 col-sm-1 control-label form-group input-sm">Phone</label>
+						<div class="col-md-7 col-sm-1 ">
+							<input type="text" class="form-control input-sm hasclear" id="phone"
+								placeholder="Phone" ng-model="phone">
+						</div>
+					</div>
+				</div>
+				
+				
+
+
+			</div>
+			
+			<div class="row no-gutter">
 				<div class="col-sm-4 col-md-6">
 					<div class="form-group">
 
 						<div class="col-md-7 col-sm-1 ">
-							<button id="advSubmit" class="btn btn-success btn-sm">Search</button>
+							<button id="advSubmit" class="btn btn-success btn-sm"  ng-click="executeOptionSearch()">Search</button>
 						</div>
 					</div>
 				</div>
-
-
 			</div>
 			<!-- /.row this actually does not appear to be needed with the form-horizontal -->
 		</form>
@@ -175,22 +226,120 @@
    	
     <!-- Sidebar navigation -->
     <ul class="nav sidebar-nav">
+    <li >
+    	<input type="text" ng-model="criteria" placeholder="Filter" class="filter" ng-keydown="selected=false" size="32"/>
+    </li>
+    <li ng-repeat="item in UserList  | match:criteria track by $index" >
+        <a href="#" ng-click="setSelection(item.primaryEmail)">
+       
+			<i class="sidebar-icon"> <img src = "{[{ item.thumbnailPhotoUrl? item.thumbnailPhotoUrl:'/img/image_not_found.jpg' }]}"></img></i>
+			<dl class="sidebar-text">
+			<dt>{[{item.name.fullName}]}</dt>
+			<dd>{[{item.organizations[0].title}]} </dd>
+			<dd>{[{item.addresses[0].locality}]} </dd>
+			</dl>
+		    </a>
+			</li>
     </ul>
     
 </aside>
 
 <div class="wrapper">
      <div class="constructor">
-    <div id="productDetails">
-        
-    </div>
-	<div id="orgChart">
-        
-    </div>
+	    <div id="productDetails" class="col-sm-12 col-lg-6" ng-show="isUserSlected()">
+	        <div class="row">
+			    <div class="span4">
+			     <img src = "{[{ SelectedUser.thumbnailPhotoUrl? SelectedUser.thumbnailPhotoUrl:'/img/image_not_found.jpg' }]}"  width="100" height="100" align="left">
+			      <div class="wrap-text"><dl><dt> {[{ SelectedUser? SelectedUser.name.fullName:'' }]}  </dt>
+			      		<dd>{[{SelectedUser.organizations[0].title}]} </dd>
+			      		<dd>{[{SelectedUser.addresses[0].locality}]} </dd>
+			      		<dd><a href="" ng-click="openMail()"> <img src="./img/mail.png" alt="send mail" class="inline" style="max-width: 25px" title="send mail"/> </a>
+			      			<!-- <a href="" ng-click="openChat()"> <img src="./img/msg.png" alt="send message" class="inline" style="max-width: 17px"/> </a> --> 
+							<a href="" ng-click="sendLink()"> <img src="./img/link.jpg" alt="send link" class="inline" style="max-width: 17px" title="send bookmark"/> </a> 
+						</dd>	 
+			      	</dl>
+			      </div>
+			     
+			    </div>
+			  </div>
+			  
+			  <div>
+					<ul class="nav nav-tabs">
+						<li class="active"><a data-toggle="tab" href="#Basic">Basic</a></li>
+						<li><a data-toggle="tab" href="#Address">Contact</a></li>
+						<li><a data-toggle="tab" href="#Organization">Organization</a></li>
+					</ul>
+					<div class="tab-content">
+		
+					<div id="Basic" class="tab-pane fade in active">
+						<table class="table table-responsive">
+							<tr class="active"> 
+								<td>Given Name</td>
+								<td>{[{SelectedUser.name.givenName}]}</td>
+							</tr>
+							<tr class="active">
+								<td>Family Name</td>
+								<td>{[{SelectedUser.name.familyName}]}</td>
+							</tr>
+							<tr class="active">
+								<td> Email</td> 
+								<td> <a href= "" ng-click="openMail()"> {[{SelectedUser.emails[0].address}]}</a>
+								</td>
+							</tr>
+							<tr class="active">
+								<td>Employee ID</td> 
+								<td ng-repeat="id in SelectedUser.externalIds | filter:'organization' as results">{[{id.value}]}
+								</td>
+							</tr>
+						</table>
+					</div>
+					
+					<div id="Address" class="tab-pane fade">
+						<table class="table table-responsive"> 
+							<tr class="active">
+								<td> Address</td> 
+								<td>{[{SelectedUser.addresses[0].formatted }]}</td> 
+							</tr>
+							
+							<tr class="active" ng-repeat = "phone in SelectedUser.phones" >
+								<td>{[{phone.type | capitalize}]}</td>
+								<td>{[{phone.value}]}</td> 
+							</tr>
+							<tr class="active">
+								<td>Cube</td> 
+								<td>{[{SelectedUser.organizations[0].location}]}</td> 
+							</tr>
+							
+						</table>
+					</div>
+					
+					<div id="Organization" class="tab-pane fade">
+						<table class="table table-responsive">
+							<tr class="active">
+								<td> Title</td>
+								<td>{[{SelectedUser.organizations[0].title}]} </td>
+							</tr>
+							<tr class="active">
+								<td>Department</td> 
+								<td>{[{SelectedUser.organizations[0].department}]}</td>
+							</tr>
+							<tr class="active">
+								<td>Company</td>
+								<td>{[{SelectedUser.organizations[0].name }]}</td>
+							</tr>
+							<tr class="active" ng-repeat = "extid in SelectedUser.externalIds" >
+								<td>{[{extid.type | capitalize}]}</td>
+								<td>{[{extid.value}]}</td> 
+							</tr>
+						</table>
+					</div>	
+	    </div>
+		 <div id ="orgChart" org-chart data="HierarchyData" selecteduser="SelectedUser" direction="horizontal" buildhierarchy="buildHierarchy()"></div>
+	   
     </div>
 </div>
  
     </div><!--/.container-->
 </body>
 </html>
-{% endautoescape %}
+

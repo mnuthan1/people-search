@@ -12,13 +12,12 @@ import json
 from decorators import decorator
 from urllib2 import HTTPError
 import logging
-import re
 
 SCOPES = ["https://www.googleapis.com/auth/admin.directory.user.readonly",
           "https://www.googleapis.com/auth/admin.directory.group.readonly"] 
 
 FIELDS = ['nextPageToken',
-                  'users(name,relations,organizations,phones,thumbnailPhotoUrl,primaryEmail,addresses,emails,externalIds)'         
+                  'users(name,relations,organizations,phones,thumbnailPhotoUrl,primaryEmail,addresses,emails,externalIds,suspended)'         
           ]
 
     
@@ -83,53 +82,42 @@ class SimpleUserSearchHandler(webapp2.RequestHandler):
         
         if not r':' in keywords:
             params = self.extract_params(keywords)
-            ''' default seach with Family name '''
-            query_result = search_google_users(params)
-            ''' search by Given Name '''
-            query_result.extend(search_google_users(self.extract_params(keywords,'givenName')))
-            if len(keywords.split(' ')) > 1:
-                query_result = filter(lambda x: self.filterResults(x,keywords.split(' ')) , query_result)
-        else:
-            # paramterised query
-            r_v = keywords.split(':')
-            params = self.extract_params(r_v[1],r_v[0])
-            ''' default seach with Family name '''
-            query_result = search_google_users(params)
-        # further filter the results to 
-        
+            ''' default seach with name'''
             
+            query_result = search_google_users(params)
+            query_result = filter(lambda x: self.filterResults(x) , query_result)
+        else:
+            params = self.extract_params(keywords,'process')
+            ''' default seach with Family name '''
+            query_result = search_google_users(params)
+                    
         responde_with_results(self,query_result)
         
-    def filterResults(self,x,value):
-        
-        if ( ( bool(re.search(r"\b"+max(value),x.get('name').get('givenName'), re.I)) and bool(re.search(r"\b"+min(value), x.get('name').get('familyName'), re.I)) ) \
-              or  (bool(re.search( r"\b"+min(value),x.get('name').get('givenName'), re.I)) and bool(re.search(r"\b"+max(value), x.get('name').get('familyName'), re.I)) ) ):
-            return True
-        else :
-            return False            
+    def filterResults(self,x):
+        return not x.get('suspended')          
     
-    def extract_params(self,query,criteira='familyName'):
+    def extract_params(self,query,criteira=''):
         """ Extract the query parameters from the URL and, after validation returns them as a
             dictionary.
         """
         prefix_list = ['familyName','givenName','email']
-        
-        query = safeString(query)
-        
-        q_l = query.split(' ')
-        if len(q_l) > 1:
-            query = max(q_l)
-            
-        if criteira in prefix_list:
-            query = ':{'+query+'}*'
-        else: 
-            query = '='+query
-                
+        new_q = []
+        if criteira != '':
+            q_l = query.split(',')
+            for q in q_l:
+                c_l = q.split(':')
+                if len(c_l) == 2:
+                    if c_l[0] in prefix_list:
+                        new_q.append(c_l[0]+':'+c_l[1])
+                    else:
+                        new_q.append(c_l[0]+'='+c_l[1])
+            query = (' '.join(new_q)) + ' isSuspended=false'
+          
         return  {'domain': 'globalfoundries.com',
                   'orderBy':'email',
                   'viewType':'admin_view',
                   'fields': ','.join(FIELDS),
-                  'query':criteira+query }
+                  'query':query }
 
         
 
