@@ -100,7 +100,8 @@ class SimpleUserSearchHandler(webapp2.RequestHandler):
         """ Extract the query parameters from the URL and, after validation returns them as a
             dictionary.
         """
-        prefix_list = ['familyName','givenName','email']
+        prefix_list = ['familyName','givenName','email','orgDepartment']
+        lower_list = ['directManager','manager']
         new_q = []
         if criteira != '':
             q_l = query.split(',')
@@ -109,6 +110,8 @@ class SimpleUserSearchHandler(webapp2.RequestHandler):
                 if len(c_l) == 2:
                     if c_l[0] in prefix_list:
                         new_q.append(c_l[0]+':'+c_l[1])
+                    elif c_l[0] in lower_list:
+                        new_q.append(c_l[0]+'='+c_l[1].lower())
                     else:
                         new_q.append(c_l[0]+'='+c_l[1])
             query = (' '.join(new_q)) + ' isSuspended=false'

@@ -47,11 +47,32 @@ app.config(function($interpolateProvider){
 app.controller('SearchBox', ['$scope','$location','dataFactory', function ($scope, $location,dataFactory) {
 	
 	
+	
+	function getQueryVariable(url,variable) {
+	    var query = url.split('?')[1];
+	    if(query)
+	    {
+		    var vars = query.split('&');
+		    for (var i = 0; i < vars.length; i++) {
+		        var pair = vars[i].split('=');
+		        if (decodeURIComponent(pair[0]) == variable) {
+		            return decodeURIComponent(pair[1]);
+		        }
+		    }
+	    }
+	    // return empty if query param not found
+	    return '';
+	    console.log('Query variable %s not found', variable);
+	}
+	
 	var parser = document.createElement('a');
 	parser.href = $location['$$absUrl'];
-	
 	$scope.selector = parser.pathname.replace(/\//g,'');
-	
+	if($scope.selector ==="")
+	{
+		 // check q parameter
+		$scope.selector = getQueryVariable($location['$$absUrl'],'q');
+	}
 	
 	
 	$scope.UserList = [];
@@ -66,6 +87,7 @@ app.controller('SearchBox', ['$scope','$location','dataFactory', function ($scop
 	$scope.manager ="";
 	$scope.locality = "";
 	$scope.phone = "";
+	$scope.empid = "";
 	$scope.localities= ['Abu Dhabi',
 						'Amsterdam',
 						'Austin',
@@ -97,6 +119,7 @@ app.controller('SearchBox', ['$scope','$location','dataFactory', function ($scop
 		$scope.manager ="";
 		$scope.locality = "";
 		$scope.phone = "";
+		$scope.empid = "";
 	}
 
 
@@ -151,6 +174,14 @@ app.controller('SearchBox', ['$scope','$location','dataFactory', function ($scop
 			$scope.selector = $scope.selector
 			+ " addressLocality='"
 			+ $scope.locality + "' ";
+		}
+		
+		if($scope.empid.length > 0) {
+			// remove letters from the empid
+			$scope.selector = $scope.selector
+			+ " externalId='"
+			+ ($scope.empid).replace(/\D/g,'') + "' ";
+				
 		}
 		
 		

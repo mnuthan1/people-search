@@ -56,7 +56,8 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 class RootPage(webapp2.RequestHandler):
     @decorator.custom_login_required
-    def get(self,param = ""):
+    def get(self,query = ""):
+               
         # check for user active session
         user = users.get_current_user()
         if user:
@@ -74,7 +75,7 @@ class RootPage(webapp2.RequestHandler):
             'user': user,
             'url': url,
             'url_linktext': url_linktext,
-            'param':param,
+            'param':query,
         }
         jinja_environment = self.jinja_environment
         template = jinja_environment.get_template("/index.html")

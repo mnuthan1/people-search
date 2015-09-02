@@ -25,7 +25,7 @@ app.directive("orgChart", function($window) {
 			selecteduser :'=',
 			buildhierarchy:'&'
 		},
-		template: "<svg width='850' height='200'></svg>",
+		template: "<svg width='50' height='200'></svg>",
 		link: function(scope, elem, attrs){
 
 			// variable definition
@@ -82,8 +82,9 @@ app.directive("orgChart", function($window) {
 				i = 0;
 				duration = 750;
 				// size of the diagram
-				viewerWidth = $(document).width()-400;
-				viewerHeight = $(document).height()-300;
+				viewerWidth = $(document).width()-15;
+				
+				viewerHeight = $(document).height()-100;
 
 				
 				tree = d3.layout.tree()
@@ -169,8 +170,11 @@ app.directive("orgChart", function($window) {
 				// Call visit function to establish maxLabelLength
 				visit(scope.data, function(d) {
 					totalNodes++;
-					maxLabelLength = Math.max(d.name.fullName.length, maxLabelLength);
-
+					// Nuthan , get maxlable length only if node has chidren
+					if(d.children)
+					{
+						maxLabelLength = Math.max(d.name.fullName.length, maxLabelLength);
+					}
 				}, function(d) {
 					return d.children && d.children.length > 0 ? d.children : null;
 				});
@@ -359,7 +363,7 @@ app.directive("orgChart", function($window) {
 					scale = zoomListener.scale();
 					x = -source.y0;
 					y = -source.x0;
-					x = x * scale + viewerWidth / 4;
+					x = x * scale + viewerWidth / 2;
 					y = y * scale + viewerHeight / 2;
 					d3.select('g').transition()
 					.duration(duration)
@@ -411,7 +415,7 @@ app.directive("orgChart", function($window) {
 						}
 					};
 					childCount(0, root);
-					//var newHeight = d3.max(levelWidth) * 25; // 25 pixels per line  
+					//viewerWidth = d3.max(levelWidth) * 25; // 25 pixels per line  
 					//console.log(levelWidth);
 					viewerHeight = d3.max(levelWidth) * 25; // 25 pixels per line
 					tree = tree.size([viewerHeight, viewerWidth]);

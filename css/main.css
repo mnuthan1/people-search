@@ -6,6 +6,25 @@ html, body {
 	font-size:11px;
 }
 
+html {
+            height: 100%;
+            overflow: hidden;
+        }
+        body {
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            overflow-y: scroll;
+            display: -webkit-flex;
+            display: -moz-flex;
+            display: -ms-flex;
+            display: flex;
+            -webkit-flex-direction: column;
+            -moz-flex-direction: column;
+            -ms-flex-direction: column;
+            flex-direction: column;
+        }
+
 
 .wrap-text {
 	padding-left: 130px;
