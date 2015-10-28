@@ -82,7 +82,7 @@ app.directive("orgChart", function($window) {
 				i = 0;
 				duration = 750;
 				// size of the diagram
-				viewerWidth = $(document).width()-15;
+				viewerWidth = $('#orgChart').width()-15;
 				
 				viewerHeight = $(document).height()-100;
 
@@ -363,7 +363,7 @@ app.directive("orgChart", function($window) {
 					scale = zoomListener.scale();
 					x = -source.y0;
 					y = -source.x0;
-					x = x * scale + viewerWidth / 2;
+					x = x * scale + viewerWidth / 4;
 					y = y * scale + viewerHeight / 2;
 					d3.select('g').transition()
 					.duration(duration)
@@ -415,9 +415,15 @@ app.directive("orgChart", function($window) {
 						}
 					};
 					childCount(0, root);
-					//viewerWidth = d3.max(levelWidth) * 25; // 25 pixels per line  
+					//viewerWidth = d3.max(3) * 25; // 25 pixels per line  
 					//console.log(levelWidth);
-					viewerHeight = d3.max(levelWidth) * 25; // 25 pixels per line
+					if(d3.max(levelWidth) > 15)
+					{
+						viewerHeight = d3.max(levelWidth) * 25; // 25 pixels per line
+					} else {
+						viewerHeight = d3.max(levelWidth) * 35; // 25 pixels per line
+					}
+					
 					tree = tree.size([viewerHeight, viewerWidth]);
 
 					// Compute the new tree layout.

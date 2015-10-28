@@ -357,8 +357,8 @@
   transform: translate3d(-280px, 0, 0);
 }
 .sidebar.open {
-  min-width: 300px;
-  width: 300px;
+  min-width: 200px;
+  width: 260px;
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
 }

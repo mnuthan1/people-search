@@ -113,6 +113,15 @@ class Search(webapp2.RequestHandler):
        
         self.searchUsers(params)
         
+        #Query based on the user alias only if the input don't have space in it
+        if (' ' in query) == False :
+            params = {'domain': 'globalfoundries.com',
+                  'orderBy':'email',
+                  'viewType':'admin_view',
+                  'fields': ','.join(FIELDS),
+                  'query':'externalId:'+query }
+            self.searchUsers(params)
+        
         # further filter the results to remove suspended users
         if( not bool(re.search(r"\bisSuspended=false",query, re.I))):
             self.all_users = filter(lambda x: self.filterResults(x) , self.all_users)

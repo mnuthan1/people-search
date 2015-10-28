@@ -1,35 +1,96 @@
 /*!
  * elements to override bootstrap settings to adjust heights of some elements in html
  */
-html, body {
-	overflow-y: visible;
-	font-size:11px;
+html {
+	height: 100%;
+	overflow: hidden;
 }
 
-html {
-            height: 100%;
-            overflow: hidden;
-        }
-        body {
-            height: 100%;
-            padding: 0;
-            margin: 0;
-            overflow-y: scroll;
+body {
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	overflow-y: scroll;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: flex;
+	-webkit-flex-direction: column;
+	-moz-flex-direction: column;
+	-ms-flex-direction: column;
+	flex-direction: column;
+}
+
+section {
+         
+            -webkit-flex: 1 0 auto;
+            -moz-flex: 1 0 auto;
+            -ms-flex: 1 0 auto;
+            flex: 1 0 auto;
             display: -webkit-flex;
             display: -moz-flex;
             display: -ms-flex;
             display: flex;
+            -webkit-flex-direction: row;
+            -moz-flex-direction: row;
+            -ms-flex-direction: row;
+            flex-direction: row;
+			flex-wrap: wrap;
+        }
+        article {
+          
+            -webkit-flex: 2 0 200px;
+            -moz-flex: 2 0 200px;
+            -ms-flex: 2 0 200px;
+            flex: 2 0 200px;
+		
+			padding: 5px;
+			order: 2;
+			
+        }
+        nav {
+        
+            -webkit-flex: 1 0 150px;
+            -moz-flex: 1 0 150px;
+            -ms-flex: 1 0 150px;
+            flex: 1 0 150px;			
+			padding: 5px;
+			order: 1;
+        }
+        aside {
+          
+            -webkit-flex: 2 0 350px;
+            -moz-flex: 2 0 350px;
+            -ms-flex: 2 0 350px;
+            flex: 2 0 350px;
+			
+	
+            display: -webkit-flex;
+            display: -moz-flex;
+            display: -ms-flex;
+            display: flex;
+			
             -webkit-flex-direction: column;
             -moz-flex-direction: column;
             -ms-flex-direction: column;
             flex-direction: column;
+			flex-wrap: wrap;
+			
+			padding: 5px;
+			order: 3;
         }
-
+        
+         header {
+            
+            -webkit-flex: 1 0 auto;
+            -moz-flex: 1 0 auto;
+            -ms-flex: 1 0 auto;
+            flex: 1 0 auto;
+        }
 
 .wrap-text {
 	padding-left: 130px;
 }
-
 
 #advSerachModal {
 	display: none;
@@ -58,11 +119,11 @@ html {
 }
 
 /* org chart */
-
 #orgChart {
 	overflow-y: visible;
 	overflow-x: visible;
 }
+
 #orgChart .node circle {
 	fill: #fff;
 	stroke: steelblue;
@@ -83,53 +144,49 @@ html {
 	cursor: pointer;
 }
 
-
 #orgChart .contextpopup {
-    position: absolute;
-    background-color: #fff;
-    width: 120px;
-    height: 25px;
-    border: 1px #ccc solid;
-    border-radius: 6px;
-    box-shadow: #333 2px 2px 4px;
-    padding: 8px;
-    font-family: arial, helvetica, sans-serif;
+	position: absolute;
+	background-color: #fff;
+	width: 120px;
+	height: 25px;
+	border: 1px #ccc solid;
+	border-radius: 6px;
+	box-shadow: #333 2px 2px 4px;
+	padding: 8px;
+	font-family: arial, helvetica, sans-serif;
 }
 
-
 #orgChart .contextpopup a {
-    color: inherit;
+	color: inherit;
 }
 
 /* ERROR message */
 #Error {
-	display : none;
-	position : fixed;
-	paddingLeft : 0px;
-	paddingRight : 0px;
-	paddingTop : 0px",
-	paddingBottom : 0px;
-	top : 10%;
-	left : 35%;
+	display: none;
+	position: fixed;
+	paddingLeft: 0px;
+	paddingRight: 0px;
+	paddingTop: 0px", paddingBottom: 0px;
+	top: 10%;
+	left: 35%;
 	width: 25%;
 	height: 60px;
 }
 
 /* Ajax Busy icon */
 #ajaxBusy {
-	display : none;
-	position : fixed;
-	paddingLeft : 0px;
-	paddingRight : 0px;
-	paddingTop : 0px;
-	paddingBottom : 0px;
-	top : 50%;
-	left : 50%;
-	z-index:1001;
+	display: none;
+	position: fixed;
+	paddingLeft: 0px;
+	paddingRight: 0px;
+	paddingTop: 0px;
+	paddingBottom: 0px;
+	top: 50%;
+	left: 50%;
+	z-index: 1001;
 }
 
-
-.filter{
+.filter {
 	padding: 1px;
 	font-size: 8px;
 	border-radius: 10px;
@@ -138,45 +195,41 @@ html {
 	margin-left: 30px;
 }
 
-
 .node {
-    cursor: pointer;
-  }
+	cursor: pointer;
+}
 
-  .overlay{
-      background-color:#EEE;
-  }
-   
-  .node circle {
-    fill: #fff;
-    stroke: steelblue;
-    stroke-width: 1.5px;
-  }
-   
-  .node text {
-    font-size:10px; 
-    font-family:sans-serif;
-  }
-   
-  .link {
-    fill: none;
-    stroke: #ccc;
-    stroke-width: 1.5px;
-  }
-  
-   
+.overlay {
+	background-color: #EEE;
+}
 
-  .templink {
-    fill: none;
-    stroke: red;
-    stroke-width: 3px;
-  }
+.node circle {
+	fill: #fff;
+	stroke: steelblue;
+	stroke-width: 1.5px;
+}
 
-  .ghostCircle.show{
-      display:block;
-  }
+.node text {
+	font-size: 10px;
+	font-family: sans-serif;
+}
 
-  .ghostCircle, .activeDrag .ghostCircle{
-       display: none;
-  }
-      
+.link {
+	fill: none;
+	stroke: #ccc;
+	stroke-width: 1.5px;
+}
+
+.templink {
+	fill: none;
+	stroke: red;
+	stroke-width: 3px;
+}
+
+.ghostCircle.show {
+	display: block;
+}
+
+.ghostCircle, .activeDrag .ghostCircle {
+	display: none;
+}

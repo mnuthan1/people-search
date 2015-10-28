@@ -23,7 +23,16 @@ FIELDS = ['nextPageToken',
     
 def responde_with_results(self, results):
     self.response.headers['Content-Type'] = 'application/json'
+    self.response.headers["Access-Control-Allow-Origin"]= "*"
+    self.response.headers["Access-Control-Allow-Credentials"]= 'true'
     self.response.out.write(json.dumps(results))
+    
+def pre_flight_response(self):
+    #self.response.headers['Content-Type'] = 'application/json'
+    self.response.headers["Access-Control-Allow-Origin"]= "*"
+    self.response.headers["Access-Control-Allow-Methods"]= 'GET'
+    self.response.headers["Access-Control-Allow-Headers"] = 'app-identifier-name,app-identifier-key,Access-Control-Allow-Origin'
+    self.response.out.write("")
 
 safeString = lambda s : "".join(c for c in s if c.isalnum() or c in (' ','.','_')).rstrip()
 @decorator.get_oauth_build    
@@ -76,6 +85,8 @@ def get_google_user(params,directory_service):
     return current_page
     
 class SimpleUserSearchHandler(webapp2.RequestHandler):
+    def options(self,keyword):
+        pre_flight_response(self)
     @decorator.app_auth_required
     def get(self, keywords):
         logging.info(keywords)
@@ -133,6 +144,9 @@ class UserGetHandler(webapp2.RequestHandler):
 
 
 class SimpleGroupSearchHandler(webapp2.RequestHandler):
+    def options(self,keyword):
+        pre_flight_response(self)
+        
     @decorator.app_auth_required
     def get(self, keywords):
         logging.info(keywords)

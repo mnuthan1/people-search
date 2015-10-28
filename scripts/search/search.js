@@ -180,7 +180,8 @@ app.controller('SearchBox', ['$scope','$location','dataFactory', function ($scop
 			// remove letters from the empid
 			$scope.selector = $scope.selector
 			+ " externalId='"
-			+ ($scope.empid).replace(/\D/g,'') + "' ";
+			//+ ($scope.empid).replace(/\D/g,'') + "' ";
+			+ ($scope.empid) + "' ";
 				
 		}
 		
