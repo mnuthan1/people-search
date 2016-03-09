@@ -345,6 +345,21 @@
 										ng-repeat="id in SelectedUser.externalIds | filter:'account' as results">{[{id.value}]}
 									</td>
 								</tr>
+								
+								<tr class="active" ng-show="(SelectedUser.externalIds| filter:'support' :true).length">
+									<td>Supports</td>
+									<td
+										ng-repeat="id in SelectedUser.externalIds | filter:'support':true as results">{[{id.value}]}
+									</td>
+								</tr>
+								
+								<tr class="active" ng-show="(SelectedUser.externalIds| filter:'supportby':true).length">
+									<td>Supported By</td>
+									<td
+										ng-repeat="id in SelectedUser.externalIds | filter:'supportby':true as results">{[{id.value}]}
+									</td>
+								</tr>
+								
 								<!-- <tr class="active" ng-show="(SelectedUser.externalIds| filter:'extmail').length">
 									<td>External Contact</td>
 									<td
@@ -371,6 +386,7 @@
 										ng-repeat="id in SelectedUser.externalIds | filter:'extmail' as results">{[{id.value}]}
 									</td>
 								</tr>
+								
 								<tr class="active">
 									<td>Cube</td>
 									<td>{[{SelectedUser.organizations[0].location}]}</td>
